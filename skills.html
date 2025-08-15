@@ -88,11 +88,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const arr = groups[g] || [];
     // Map: skill name -> set of levels observed in this group
     const m = new Map();
-    for (const it of arr) {
-      if (!it || !it.name) continue;
-      if (!m.has(it.name)) m.set(it.name, new Set());
-      if (typeof it.level === "number") m.get(it.name).add(it.level);
-    }
+  for (const it of arr) {
+    if (!it || !it.name) continue;
+    // skip anything with null level or not in skillNames list
+    if (it.level === null) continue;
+    if (!DATA.skillNames.includes(it.name)) continue;
+
+    if (!m.has(it.name)) m.set(it.name, new Set());
+    m.get(it.name).add(it.level);
+  }
     const rows = Array.from(m.entries())
       .map(([name,set])=>({ name, levels:[...set].sort((a,b)=>a-b).join(", ") }))
       .sort((a,b)=>a.name.localeCompare(b.name));
