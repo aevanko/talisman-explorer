@@ -1,3 +1,17 @@
+<style>
+  /* Core layout */
+  .wrap {
+    max-width: 1100px;
+    margin: 32px auto;      /* centers */
+    padding: 0 16px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+  }
+</style>
 
 <!doctype html>
 <html lang="en">
@@ -31,8 +45,29 @@
 <div class="wrap">
   <div class="card">
     <h1>Talisman Explorer — v1.02.01 by @aevanko</h1>
-    <p class="muted">Pick up to 3 skills (AND). Matching is order-agnostic.</p>
+    <p style="color: var(--muted);">
+      Pick up to 3 skills (AND). Matching is order-agnostic.
+      <span style="margin: 0 10px;">|</span>
+      <a class="muted-link" href="./skills.html">
+        Skill &amp; Group Reference
+      </a>
+    </p>
+  </div>
+</div>
 
+<style>
+  .muted-link {
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .muted-link:hover {
+    color: var(--accent2);
+    text-decoration: underline;
+  }
+  .muted-link:visited {
+    color: var(--muted);
+  }
+</style>
 
     <div class="row" id="selectors">
       <div>
