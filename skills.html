@@ -1,85 +1,43 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Talisman Explorer — Skill & Group Reference</title>
-<style>
-  :root { --bg:#0b0f14; --card:#121820; --muted:#94a3b8; --text:#e2e8f0; --border:#1f2937; --accent:#38bdf8; --accent2:#7dd3fc; }
-  body { background:var(--bg); color:var(--text); font-family: ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial; margin:0; }
-  .wrap { max-width:1100px; margin:32px auto; padding:0 16px; }
-  .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:20px; }
-  h1 { margin:0 0 6px 0; }
-  p.muted { color:var(--muted); margin-top:0; }
-  nav a { color:var(--accent2); text-decoration:none; margin-right:12px; }
-  table { width:100%; border-collapse:collapse; margin-top:14px; font-size:14px; }
-  th,td { border-bottom:1px solid var(--border); text-align:left; padding:8px 8px; vertical-align:top; }
-  th { color:var(--muted); font-weight:600; }
-  details { border:1px solid var(--border); border-radius:12px; padding:10px 12px; background:#0f1622; margin:14px 0; }
-  summary { cursor:pointer; font-weight:700; color:var(--accent2); }
-  .pill { display:inline-block; padding:2px 8px; border-radius:999px; font-size:12px; background:#0f1622; border:1px solid var(--border); color:var(--muted); margin-left:8px;}
-  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; }
-  .section-card { background:#0f1622; border:1px solid var(--border); border-radius:12px; padding:12px; }
-  .section-card h3 { margin:0 0 8px 0; }
-  .muted { color:var(--muted); }
-</style>
-</head>
-<body>
-<div class="wrap">
-  <div class="card">
-    <nav>
-      <a href="./index.html">← Back to Explorer</a>
-    </nav>
-    <h1>Skill & Group Reference</h1>
-    <p class="muted">This page lists the skills by group and shows all available levels. It reads the same <code>DATA</code> used by the Explorer.</p>
-
-    <details open>
-      <summary>All Skills & Levels <span id="skillCount" class="pill"></span></summary>
-      <table id="allSkills">
-        <thead><tr><th>Skill (English)</th><th>Levels</th></tr></thead>
-        <tbody></tbody>
-      </table>
-    </details>
-
-    <h2 style="margin-top:18px;">Groups</h2>
-    <div id="groupGrid" class="grid"></div>
-  </div>
-</div>
-
-<!-- Shared dataset -->
+<!-- Load DATA first -->
 <script src="./data.js"></script>
+
+<!-- Then run the skills page code -->
 <script>
-(function main(){
+document.addEventListener("DOMContentLoaded", function () {
   if (!window.DATA) {
-    document.body.innerHTML = "<p style='color:#f88;padding:20px;font-family:monospace'>ERROR: data.js not found. Put your DATA object into data.js and include it before this script.</p>";
+    document.body.innerHTML =
+      "<p style='color:#f88;padding:20px;font-family:monospace'>" +
+      "ERROR: data.js not found. Put your DATA object into data.js and include it before this script." +
+      "</p>";
     return;
   }
 
-  // 1) Build "All Skills & Levels" from DATA.levelsByName
+  // 1) Build "All Skills & Levels"
   const allTbody = document.querySelector('#allSkills tbody');
-  const entries = Object.entries(DATA.levelsByName || {});
-  entries.sort((a,b)=>a[0].localeCompare(b[0]));
+  const entries = Object.entries(DATA.levelsByName || {}).sort((a, b) => a[0].localeCompare(b[0]));
   for (const [name, levels] of entries) {
     const tr = document.createElement('tr');
-    const tdName = document.createElement('td'); tdName.textContent = name;
-    const tdLvls = document.createElement('td'); tdLvls.textContent = Array.isArray(levels) ? levels.join(", ") : "";
-    tr.appendChild(tdName); tr.appendChild(tdLvls); allTbody.appendChild(tr);
+    const tdName = document.createElement('td');
+    tdName.textContent = name;
+    const tdLvls = document.createElement('td');
+    tdLvls.textContent = Array.isArray(levels) ? levels.join(", ") : "";
+    tr.appendChild(tdName);
+    tr.appendChild(tdLvls);
+    allTbody.appendChild(tr);
   }
   document.getElementById('skillCount').textContent = entries.length + " skills";
 
-  // 2) Build Group cards using DATA.groups
+  // 2) Build Group cards
   const groupGrid = document.getElementById('groupGrid');
   const groups = DATA.groups || {};
-  const groupNames = Object.keys(groups).sort((a,b)=>{
-    // try to keep numeric order if names like "Group 1"
-    const na = parseInt((a.match(/\d+/)||[])[0]||"9999",10);
-    const nb = parseInt((b.match(/\d+/)||[])[0]||"9999",10);
+  const groupNames = Object.keys(groups).sort((a, b) => {
+    const na = parseInt((a.match(/\d+/) || [])[0] || "9999", 10);
+    const nb = parseInt((b.match(/\d+/) || [])[0] || "9999", 10);
     return na - nb || a.localeCompare(b);
   });
 
   for (const g of groupNames) {
     const arr = groups[g] || [];
-    // Collapse to base skill names and collect levels
     const map = new Map();
     for (const it of arr) {
       if (!it || !it.name) continue;
@@ -89,33 +47,41 @@
 
     const card = document.createElement('div');
     card.className = 'section-card';
-    const h3 = document.createElement('h3'); h3.textContent = g + " ";
-    const pill = document.createElement('span'); pill.className = 'pill'; pill.textContent = map.size + " skills";
+    const h3 = document.createElement('h3');
+    h3.textContent = g + " ";
+    const pill = document.createElement('span');
+    pill.className = 'pill';
+    pill.textContent = map.size + " skills";
     h3.appendChild(pill);
     card.appendChild(h3);
 
     const table = document.createElement('table');
-    const thead = document.createElement('thead');
-    thead.innerHTML = "<tr><th>Skill</th><th>Levels in this Group</th></tr>";
-    table.appendChild(thead);
-
+    table.innerHTML = "<thead><tr><th>Skill</th><th>Levels in this Group</th></tr></thead>";
     const tbody = document.createElement('tbody');
-    const rows = Array.from(map.entries()).map(([name, set])=>{
-      const levels = Array.from(set).sort((a,b)=>a-b).join(", ");
-      return {name, levels};
-    }).sort((a,b)=>a.name.localeCompare(b.name));
+
+    const rows = Array.from(map.entries())
+      .map(([name, set]) => ({
+        name,
+        levels: Array.from(set).sort((a, b) => a - b).join(", ")
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
 
     for (const r of rows) {
       const tr = document.createElement('tr');
-      const td1 = document.createElement('td'); td1.textContent = r.name;
-      const td2 = document.createElement('td'); td2.textContent = r.levels || "—";
-      tr.appendChild(td1); tr.appendChild(td2); tbody.appendChild(tr);
+      const td1 = document.createElement('td');
+      td1.textContent = r.name;
+      const td2 = document.createElement('td');
+      td2.textContent = r.levels || "—";
+      tr.appendChild(td1);
+      tr.appendChild(td2);
+      tbody.appendChild(tr);
     }
+
     table.appendChild(tbody);
     card.appendChild(table);
     groupGrid.appendChild(card);
   }
-})();
+});
 </script>
 </body>
 </html>
