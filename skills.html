@@ -1,76 +1,81 @@
-<!-- Load the shared dataset -->
-<script src="https://aevanko.github.io/talisman-explorer/data.js?v=1"></script>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Talisman Explorer — Skill & Group Reference</title>
+<style>
+  :root { --bg:#0b0f14; --card:#121820; --muted:#94a3b8; --text:#e2e8f0; --border:#1f2937; --accent:#38bdf8; --accent2:#7dd3fc; }
+  * { box-sizing: border-box; }
+  body { background:var(--bg); color:var(--text); font-family: ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial; margin:0; }
+  .wrap { max-width:1100px; margin:32px auto; padding:0 16px; }
+  .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:20px; }
+  h1 { margin:0 0 6px 0; }
+  p.muted { color:var(--muted); margin-top:0; }
+  nav a { color:var(--accent2); text-decoration:none; }
+  nav a:hover { text-decoration:underline; }
+  .pill { display:inline-block; padding:2px 8px; border-radius:999px; font-size:12px; background:#0f1622; border:1px solid var(--border); color:var(--muted); margin-left:8px;}
+  details { border:1px solid var(--border); border-radius:12px; padding:10px 12px; background:#0f1622; margin:14px 0; }
+  summary { cursor:pointer; font-weight:700; color:var(--accent2); }
+  table { width:100%; border-collapse:collapse; margin-top:14px; font-size:14px; }
+  th,td { border-bottom:1px solid var(--border); text-align:left; padding:8px; vertical-align: top; }
+  th { color:var(--muted); font-weight:600; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; }
+  .section-card { background:#0f1622; border:1px solid var(--border); border-radius:12px; padding:12px; }
+  .section-card h3 { margin:0 0 8px 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <nav style="margin-bottom:10px;">
+      <a href="./index.html">← Back to Explorer</a>
+    </nav>
+    <h1>Skill & Group Reference</h1>
+    <p class="muted">This page lists all skills and the levels present in each group. It uses the same <code>DATA</code> as the Explorer.</p>
+
+    <details open>
+      <summary>All Skills & Levels <span id="skillCount" class="pill"></span></summary>
+      <table id="allSkills">
+        <thead><tr><th>Skill (English)</th><th>Levels</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </details>
+
+    <h2 style="margin-top:18px;">Groups</h2>
+    <div id="groupGrid" class="grid"></div>
+  </div>
+</div>
+
+<!-- Load the shared dataset FIRST (same folder as this file) -->
+<script src="./data.js"></script>
 
 <!-- Build the reference UI -->
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  if (!window.DATA) {
+  // Guard: works with global const declared in data.js
+  if (typeof DATA === "undefined") {
     document.body.innerHTML =
-      "<p style='color:#f88;padding:20px;font-family:monospace'>ERROR: data.js not found.</p>";
+      "<p style='color:#f88;padding:20px;font-family:monospace'>" +
+      "ERROR: data.js not found. Put your DATA object into data.js and include it before this script." +
+      "</p>";
     return;
   }
 
-  // 0) Ensure required containers exist (creates them if your HTML didn't)
-  function ensure(id, html) {
-    let el = document.getElementById(id);
-    if (!el) {
-      const wrap = document.createElement("div");
-      wrap.innerHTML = html.trim();
-      document.body.appendChild(wrap.firstElementChild);
-      el = document.getElementById(id);
-    }
-    return el;
-  }
-
-  ensure("headerBlock", `
-    <div id="headerBlock" style="max-width:1100px;margin:24px auto 0;padding:0 16px;">
-      <nav style="margin-bottom:10px;">
-        <a href="./index.html" style="color:#7dd3fc;text-decoration:none">← Back to Explorer</a>
-      </nav>
-      <h1 style="margin:0 0 6px 0;">Skill & Group Reference</h1>
-      <p style="margin:0;color:#94a3b8">Auto-generated from the same <code>DATA</code> used by the Explorer.</p>
-    </div>
-  `);
-
-  ensure("skillsSection", `
-    <div id="skillsSection" style="max-width:1100px;margin:16px auto;padding:0 16px;">
-      <details open style="border:1px solid #1f2937;border-radius:12px;padding:10px 12px;background:#0f1622;">
-        <summary style="cursor:pointer;font-weight:700;color:#7dd3fc">
-          All Skills & Levels <span id="skillCount"
-          style="display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;background:#0f1622;border:1px solid #1f2937;color:#94a3b8;margin-left:8px;"></span>
-        </summary>
-        <table id="allSkills" style="width:100%;border-collapse:collapse;margin-top:14px;font-size:14px;">
-          <thead>
-            <tr><th style="text-align:left;color:#94a3b8;border-bottom:1px solid #1f2937;padding:8px;">Skill (English)</th>
-                <th style="text-align:left;color:#94a3b8;border-bottom:1px solid #1f2937;padding:8px;">Levels</th></tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </details>
-    </div>
-  `);
-
-  ensure("groupsSection", `
-    <div id="groupsSection" style="max-width:1100px;margin:16px auto 24px;padding:0 16px;">
-      <h2 style="margin:18px 0 8px 0;">Groups</h2>
-      <div id="groupGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;"></div>
-    </div>
-  `);
-
-  // 1) Build "All Skills & Levels"
+  // 1) All Skills & Levels (from DATA.levelsByName)
   const tbody = document.querySelector('#allSkills tbody');
   const entries = Object.entries(DATA.levelsByName || {}).sort((a,b)=>a[0].localeCompare(b[0]));
   for (const [name, levels] of entries) {
     const tr = document.createElement('tr');
-    tr.innerHTML =
-      `<td style="border-bottom:1px solid #1f2937;padding:8px;">${name}</td>
-       <td style="border-bottom:1px solid #1f2937;padding:8px;">${Array.isArray(levels)?levels.join(", "):""}</td>`;
+    const tdName = document.createElement('td'); tdName.textContent = name;
+    const tdLvls = document.createElement('td'); tdLvls.textContent = Array.isArray(levels) ? levels.join(", ") : "";
+    tr.appendChild(tdName); tr.appendChild(tdLvls);
     tbody.appendChild(tr);
   }
   const count = document.getElementById('skillCount');
   if (count) count.textContent = `${entries.length} skills`;
 
-  // 2) Build Group cards
+  // 2) Groups (from DATA.groups)
   const groupGrid = document.getElementById('groupGrid');
   const groups = DATA.groups || {};
   const groupNames = Object.keys(groups).sort((a,b)=>{
@@ -81,6 +86,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   for (const g of groupNames) {
     const arr = groups[g] || [];
+    // Map: skill name -> set of levels observed in this group
     const m = new Map();
     for (const it of arr) {
       if (!it || !it.name) continue;
@@ -88,34 +94,32 @@ document.addEventListener("DOMContentLoaded", () => {
       if (typeof it.level === "number") m.get(it.name).add(it.level);
     }
     const rows = Array.from(m.entries())
-      .map(([name,set])=>({name, levels:[...set].sort((a,b)=>a-b).join(", ")}))
+      .map(([name,set])=>({ name, levels:[...set].sort((a,b)=>a-b).join(", ") }))
       .sort((a,b)=>a.name.localeCompare(b.name));
 
     const card = document.createElement('div');
-    card.style.cssText = "background:#0f1622;border:1px solid #1f2937;border-radius:12px;padding:12px;";
-    card.innerHTML = `<h3 style="margin:0 0 8px 0;">${g}
-      <span style="display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;background:#0f1622;border:1px solid #1f2937;color:#94a3b8;margin-left:8px;">
-        ${rows.length} skills
-      </span>
+    card.className = 'section-card';
+    card.innerHTML = `<h3>${g}
+      <span class="pill">${rows.length} skills</span>
     </h3>`;
 
     const table = document.createElement('table');
-    table.style.cssText = "width:100%;border-collapse:collapse;font-size:14px;";
-    table.innerHTML = "<thead><tr>" +
-      "<th style='text-align:left;color:#94a3b8;border-bottom:1px solid #1f2937;padding:8px;'>Skill</th>" +
-      "<th style='text-align:left;color:#94a3b8;border-bottom:1px solid #1f2937;padding:8px;'>Levels in this Group</th>" +
-      "</tr></thead>";
+    table.innerHTML = "<thead><tr><th>Skill</th><th>Levels in this Group</th></tr></thead>";
     const tb = document.createElement('tbody');
+
     for (const r of rows) {
       const tr = document.createElement('tr');
-      tr.innerHTML =
-        `<td style="border-bottom:1px solid #1f2937;padding:8px;">${r.name}</td>
-         <td style="border-bottom:1px solid #1f2937;padding:8px;">${r.levels || "—"}</td>`;
+      const td1 = document.createElement('td'); td1.textContent = r.name;
+      const td2 = document.createElement('td'); td2.textContent = r.levels || "—";
+      tr.appendChild(td1); tr.appendChild(td2);
       tb.appendChild(tr);
     }
+
     table.appendChild(tb);
     card.appendChild(table);
     groupGrid.appendChild(card);
   }
 });
 </script>
+</body>
+</html>
