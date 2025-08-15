@@ -7,23 +7,34 @@
 <style>
   :root { --bg:#0b0f14; --card:#121820; --muted:#94a3b8; --text:#e2e8f0; --border:#1f2937; --accent:#38bdf8; --accent2:#7dd3fc; }
   body { background:var(--bg); color:var(--text); font-family: ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial; margin:0; }
-  .wrap { max-width:1200px; margin:32px auto; padding:0 16px; }
+
+  /* Core layout – single source of truth */
+  .wrap { max-width:1100px; margin:32px auto; padding:0 16px; box-sizing:border-box; }
   .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:20px; }
+
   .row { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px; align-items:end; }
   label { font-size:12px; color:var(--muted); display:block; margin-bottom:6px; }
   select, input[type="number"] { width:100%; background:#0f1622; color:#e2e8f0; border:1px solid var(--border); border-radius:10px; padding:10px 12px; font-size:14px; }
   button { background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#001018; border:none; border-radius:12px; padding:10px 14px; font-weight:700; cursor:pointer; }
-  .controls-row { grid-column: 1 / -1; display:flex; gap:10px; justify-content:flex-start; }
-  .slot-grid { display:grid; grid-template-columns: repeat(8, max-content); gap: 10px 16px; align-items:center; }
-  @media (max-width: 900px) { .slot-grid { grid-template-columns: repeat(4, max-content); } }
+
+  .controls-row { grid-column:1 / -1; display:flex; gap:10px; justify-content:flex-start; }
+
+  .slot-grid { display:grid; grid-template-columns:repeat(8,max-content); gap:10px 16px; align-items:center; }
+  @media (max-width:900px){ .slot-grid { grid-template-columns:repeat(4,max-content); } }
   .slot-grid label { display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border:1px solid var(--border); border-radius:10px; background:#0f1622; }
+
   table { width:100%; border-collapse:collapse; margin-top:14px; font-size:14px; }
-  th,td { border-bottom:1px solid var(--border); text-align:left; padding:10px 8px; vertical-align: top; }
+  th,td { border-bottom:1px solid var(--border); text-align:left; padding:10px 8px; vertical-align:top; }
   th { color:var(--muted); font-weight:600; }
+
   .pill { display:inline-block; padding:2px 8px; border-radius:999px; font-size:12px; background:#0f1622; border:1px solid var(--border); color:var(--muted); }
   .muted { color:var(--muted); }
   hr.div { border:0; border-top:1px solid var(--border); margin:18px 0; }
-  #summary, #aggTable, #detailTitle, #detailTable { display:block; width:100%; }
+
+  /* Link styling */
+  .muted-link { color:var(--muted); text-decoration:none; }
+  .muted-link:hover { color:var(--accent2); text-decoration:underline; }
+  .muted-link:visited { color:var(--muted); }
 </style>
 </head>
 <body>
@@ -36,24 +47,6 @@
       <span style="margin: 0 10px;">|</span>
       <a class="muted-link" href="./skills.html">Skill &amp; Group Reference</a>
     </p>
-
-<style>
-  .wrap {
-    max-width: 1100px;
-    margin: 32px auto;
-    padding: 0 16px;
-    box-sizing: border-box;
-  }
-  .card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 20px;
-  }
-  .muted-link { color: var(--muted); text-decoration: none; }
-  .muted-link:hover { color: var(--accent2); text-decoration: underline; }
-  .muted-link:visited { color: var(--muted); }
-</style>
 
     <div class="row" id="selectors">
       <div>
