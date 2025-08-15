@@ -23,7 +23,8 @@
   .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; }
   .section-card { background:#0f1622; border:1px solid var(--border); border-radius:12px; padding:12px; }
   .section-card h3 { margin:0 0 8px 0; }
-</style>
+  .banner-img { display: block; max-width: 100%; height: auto; margin: 0 auto 20px; border-radius: 12px; }
+  </style>
 </head>
 <body>
 <div class="wrap">
@@ -34,6 +35,10 @@
     <h1>Skill & Group Reference</h1>
     <p class="muted">This page lists all skills and the levels present in each group. It uses the same <code>DATA</code> as the Explorer.</p>
 
+    <img src="images/chart.png" alt="Skills Reference" class="banner-img">
+    
+
+    
     <details closed>
       <summary>All Skills & Levels <span id="skillCount" class="pill"></span></summary>
       <table id="allSkills">
