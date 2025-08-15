@@ -1,0 +1,281 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Talisman Explorer — v1.02.01 by @aevanko</title>
+<style>
+  :root { --bg:#0b0f14; --card:#121820; --muted:#94a3b8; --text:#e2e8f0; --border:#1f2937; --accent:#38bdf8; --accent2:#7dd3fc; }
+  body { background:var(--bg); color:var(--text); font-family: ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial; margin:0; }
+  .wrap { max-width:1200px; margin:32px auto; padding:0 16px; }
+  .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:20px; }
+  .row { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px; align-items:end; }
+  label { font-size:12px; color:var(--muted); display:block; margin-bottom:6px; }
+  select, input[type="number"] { width:100%; background:#0f1622; color:#e2e8f0; border:1px solid var(--border); border-radius:10px; padding:10px 12px; font-size:14px; }
+  button { background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#001018; border:none; border-radius:12px; padding:10px 14px; font-weight:700; cursor:pointer; }
+  .controls-row { grid-column: 1 / -1; display:flex; gap:10px; justify-content:flex-start; }
+  .slot-grid { display:grid; grid-template-columns: repeat(8, max-content); gap: 10px 16px; align-items:center; }
+  @media (max-width: 900px) { .slot-grid { grid-template-columns: repeat(4, max-content); } }
+  .slot-grid label { display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border:1px solid var(--border); border-radius:10px; background:#0f1622; }
+  table { width:100%; border-collapse:collapse; margin-top:14px; font-size:14px; }
+  th,td { border-bottom:1px solid var(--border); text-align:left; padding:10px 8px; vertical-align: top; }
+  th { color:var(--muted); font-weight:600; }
+  .pill { display:inline-block; padding:2px 8px; border-radius:999px; font-size:12px; background:#0f1622; border:1px solid var(--border); color:var(--muted); }
+  .muted { color:var(--muted); }
+  hr.div { border:0; border-top:1px solid var(--border); margin:18px 0; }
+  #summary, #aggTable, #detailTitle, #detailTable { display:block; width:100%; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <h1>Talisman Explorer — v1.02.01 by @aevanko</h1>
+    <p class="muted">Pick up to 3 skills (AND). Matching is order-agnostic. If two selected skills share the same base (e.g., <em>Artillery +1</em> and <em>Artillery +2</em>), results are 0.</p>
+
+    <div class="row" id="selectors">
+      <div>
+        <label>Skill A</label>
+        <select id="skillA"><option value="">— (choose a skill)</option></select>
+        <label style="margin-top:6px;">Level (A)</label>
+        <select id="levelA"><option value="">Any level</option></select>
+      </div>
+      <div>
+        <label>Skill B</label>
+        <select id="skillB"><option value="">— (optional)</option></select>
+        <label style="margin-top:6px;">Level (B)</label>
+        <select id="levelB"><option value="">Any level</option></select>
+      </div>
+      <div>
+        <label>Skill C</label>
+        <select id="skillC"><option value="">— (optional)</option></select>
+        <label style="margin-top:6px;">Level (C)</label>
+        <select id="levelC"><option value="">Any level</option></select>
+      </div>
+      <div>
+        <label>Sample size</label>
+        <input id="limit" type="number" value="5000" min="100" step="100" />
+      </div>
+    </div>
+
+    <div class="row">
+      <div style="grid-column: 1 / -1;">
+        <label style="display:block; margin-bottom:6px; color:#94a3b8;">Filter by Slots (optional)</label>
+        <div id="slotChecks" class="slot-grid"></div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="controls-row">
+        <button id="clearBtn" type="button">Clear All</button>
+        <button id="runBtn">Search</button>
+      </div>
+    </div>
+
+    <div id="summary" class="muted" style="margin-top:8px;"></div>
+    <hr class="div">
+
+    <table id="aggTable">
+      <thead><tr><th>Rarity</th><th>Selected Levels</th><th>Slot Variant</th><th>Total</th></tr></thead>
+      <tbody></tbody>
+    </table>
+
+    <h2 id="detailTitle" style="margin-top:20px;">Sample Detailed Combos</h2>
+    <table id="detailTable">
+      <thead><tr><th>Rarity</th><th>Slots</th><th>Skill 1</th><th>Skill 2</th><th>Skill 3</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+const DATA = {"groups": {"Group 1": [{"raw": "Artillery +1", "name": "Artillery", "level": 1}, {"raw": "Attack Boost +1", "name": "Attack Boost", "level": 1}, {"raw": "Ballistics +1", "name": "Ballistics", "level": 1}, {"raw": "Blast Attack +1", "name": "Blast Attack", "level": 1}, {"raw": "Bludgeoner +1", "name": "Bludgeoner", "level": 1}, {"raw": "Charge Master +1", "name": "Charge Master", "level": 1}, {"raw": "Critical Draw +1", "name": "Critical Draw", "level": 1}, {"raw": "Critical Element +1", "name": "Critical Element", "level": 1}, {"raw": "Critical Eye +1", "name": "Critical Eye", "level": 1}, {"raw": "Critical Status +1", "name": "Critical Status", "level": 1}, {"raw": "Dragon Attack +1", "name": "Dragon Attack", "level": 1}, {"raw": "Fire Attack +1", "name": "Fire Attack", "level": 1}, {"raw": "Focus +1", "name": "Focus", "level": 1}, {"raw": "Guard +1", "name": "Guard", "level": 1}, {"raw": "Guard Up +1", "name": "Guard Up", "level": 1}, {"raw": "Handicraft +1", "name": "Handicraft", "level": 1}, {"raw": "Horn Maestro +1", "name": "Horn Maestro", "level": 1}, {"raw": "Ice Attack +1", "name": "Ice Attack", "level": 1}, {"raw": "Load Shells +1", "name": "Load Shells", "level": 1}, {"raw": "Mind's Eye +1", "name": "Mind's Eye", "level": 1}, {"raw": "Offensive Guard +1", "name": "Offensive Guard", "level": 1}, {"raw": "Opening Shot +1", "name": "Opening Shot", "level": 1}, {"raw": "Paralysis Attack +1", "name": "Paralysis Attack", "level": 1}, {"raw": "Poison Boost +1", "name": "Poison Boost", "level": 1}, {"raw": "Power Prolonger +1", "name": "Power Prolonger", "level": 1}, {"raw": "Protective Polish +1", "name": "Protective Polish", "level": 1}, {"raw": "Punishing Draw +1", "name": "Punishing Draw", "level": 1}, {"raw": "Rapid Morph +1", "name": "Rapid Morph", "level": 1}, {"raw": "Razor Sharp +1", "name": "Razor Sharp", "level": 1}, {"raw": "Sleep Attack +1", "name": "Sleep Attack", "level": 1}, {"raw": "Slugger +1", "name": "Slugger", "level": 1}, {"raw": "Special Ammo Boost +1", "name": "Special Ammo Boost", "level": 1}, {"raw": "Speed Sharpening +1", "name": "Speed Sharpening", "level": 1}, {"raw": "Stamina Thief +1", "name": "Stamina Thief", "level": 1}, {"raw": "Tetrad Shot +1", "name": "Tetrad Shot", "level": 1}, {"raw": "Thunder Attack +1", "name": "Thunder Attack", "level": 1}, {"raw": "Water Attack +1", "name": "Water Attack", "level": 1}, {"raw": "Group 3", "name": "Group 3", "level": null}, {"raw": "Skill Level", "name": "Skill Level", "level": null}, {"raw": "Skill Name", "name": "Skill Name", "level": null}, {"raw": "KO術", "name": "KO術", "level": null}, {"raw": "ガード強化", "name": "ガード強化", "level": null}, {"raw": "ガード性能", "name": "ガード性能", "level": null}, {"raw": "スタミナ奪取", "name": "スタミナ奪取", "level": null}, {"raw": "チャージマスター", "name": "チャージマスター", "level": null}, {"raw": "ファーストショット", "name": "ファーストショット", "level": null}, {"raw": "フォースショット", "name": "フォースショット", "level": null}, {"raw": "会心撃【属性】", "name": "会心撃【属性】", "level": null}, {"raw": "会心撃【特殊】", "name": "会心撃【特殊】", "level": null}, {"raw": "剛刃研階", "name": "剛刃研階", "level": null}, {"raw": "匠", "name": "匠", "level": null}, {"raw": "強化持銃", "name": "強化持銃", "level": null}, {"raw": "殚導強化", "name": "殚導強化", "level": null}, {"raw": "心眼", "name": "心眼", "level": null}, {"raw": "抜刀術【力】", "name": "抜刀術【力】", "level": null}, {"raw": "抜刀術【技】", "name": "抜刀術【技】", "level": null}, {"raw": "攻めの守勢", "name": "攻めの守勢", "level": null}, {"raw": "攻撃", "name": "攻撃", "level": null}, {"raw": "散弾・剛射強化", "name": "散弾・剛射強化", "level": null}, {"raw": "菜物", "name": "菜物", "level": null}, {"raw": "毒属性強化", "name": "毒属性強化", "level": null}, {"raw": "水属性攻撃強化", "name": "水属性攻撃強化", "level": null}, {"raw": "氷属性攻撃強化", "name": "氷属性攻撃強化", "level": null}, {"raw": "火属性攻撃強化", "name": "火属性攻撃強化", "level": null}, {"raw": "爆破属性強化", "name": "爆破属性強化", "level": null}, {"raw": "睡眠ピン追加", "name": "睡眠ピン追加", "level": null}, {"raw": "睡眠属性強化", "name": "睡眠属性強化", "level": null}, {"raw": "砲術", "name": "砲術", "level": null}, {"raw": "見切り", "name": "見切り", "level": null}, {"raw": "貫通弾・竜の矢強化", "name": "貫通弾・竜の矢強化", "level": null}, {"raw": "通常弾・通常矢強イ", "name": "通常弾・通常矢強イ", "level": null}, {"raw": "速射強化", "name": "速射強化", "level": null}, {"raw": "速人芸", "name": "速人芸", "level": null}, {"raw": "飩器使", "name": "飩器使", "level": null}, {"raw": "集中", "name": "集中", "level": null}, {"raw": "雪属性攻撃強化", "name": "雪属性攻撃強化", "level": null}, {"raw": "高速变形", "name": "高速变形", "level": null}, {"raw": "麻婆ビン追加", "name": "麻婆ビン追加", "level": null}, {"raw": "麻属性強化", "name": "麻属性強化", "level": null}, {"raw": "龍属性攻撃強化", "name": "龍属性攻撃強化", "level": null}, {"raw": "Group 8", "name": "Group 8", "level": null}, {"raw": "キノコ大好き", "name": "キノコ大好き", "level": null}, {"raw": "スタミナ急速回復", "name": "スタミナ急速回復", "level": null}, {"raw": "フルチャージ", "name": "フルチャージ", "level": null}, {"raw": "回避性能", "name": "回避性能", "level": null}, {"raw": "回避距離UP", "name": "回避距離UP", "level": null}, {"raw": "属性やられ耐性", "name": "属性やられ耐性", "level": null}, {"raw": "急襲", "name": "急襲", "level": null}, {"raw": "整備", "name": "整備", "level": null}, {"raw": "渾身", "name": "渾身", "level": null}, {"raw": "火事場力", "name": "火事場力", "level": null}, {"raw": "災禍転福", "name": "災禍転福", "level": null}, {"raw": "破壊王", "name": "破壊王", "level": null}, {"raw": "耳栓", "name": "耳栓", "level": null}, {"raw": "逆根み", "name": "逆根み", "level": null}, {"raw": "逆襲", "name": "逆襲", "level": null}, {"raw": "Group 4", "name": "Group 4", "level": null}, {"raw": "剛刃研磨", "name": "剛刃研磨", "level": null}, {"raw": "弹導強化", "name": "弹導強化", "level": null}, {"raw": "案物", "name": "案物", "level": null}, {"raw": "超会心", "name": "超会心", "level": null}, {"raw": "雷属性攻撃強化", "name": "雷属性攻撃強化", "level": null}, {"raw": "麻痺風性強化", "name": "麻痺風性強化", "level": null}, {"raw": "龍属性攻擊強化", "name": "龍属性攻擊強化", "level": null}, {"raw": "Group 10", "name": "Group 10", "level": null}, {"raw": "力の解放", "name": "力の解放", "level": null}, {"raw": "属性吸奴", "name": "属性吸奴", "level": null}, {"raw": "属性变換", "name": "属性变換", "level": null}, {"raw": "巧撉", "name": "巧撉", "level": null}, {"raw": "弱点特劝", "name": "弱点特劝", "level": null}, {"raw": "挑戰者", "name": "挑戰者", "level": null}, {"raw": "攻勢", "name": "攻勢", "level": null}, {"raw": "連撉", "name": "連撉", "level": null}, {"raw": "鎖刃刺", "name": "鎖刃刺", "level": null}], "Group 2": [{"raw": "Airborne +1", "name": "Airborne", "level": 1}, {"raw": "Artillery +2", "name": "Artillery", "level": 2}, {"raw": "Attack Boost +2", "name": "Attack Boost", "level": 2}, {"raw": "Ballistics +2", "name": "Ballistics", "level": 2}, {"raw": "Blast Attack +2", "name": "Blast Attack", "level": 2}, {"raw": "Blast Functionality +1", "name": "Blast Functionality", "level": 1}, {"raw": "Bludgeoner +2", "name": "Bludgeoner", "level": 2}, {"raw": "Charge Up +1", "name": "Charge Up", "level": 1}, {"raw": "Charge Master +2", "name": "Charge Master", "level": 2}, {"raw": "Critical Draw +2", "name": "Critical Draw", "level": 2}, {"raw": "Critical Element +2", "name": "Critical Element", "level": 2}, {"raw": "Critical Eye +2", "name": "Critical Eye", "level": 2}, {"raw": "Critical Status +2", "name": "Critical Status", "level": 2}, {"raw": "Dragon Attack +2", "name": "Dragon Attack", "level": 2}, {"raw": "Exhaust Functionality +1", "name": "Exhaust Functionality", "level": 1}, {"raw": "Fire Attack +2", "name": "Fire Attack", "level": 2}, {"raw": "Focus +2", "name": "Focus", "level": 2}, {"raw": "Guard +2", "name": "Guard", "level": 2}, {"raw": "Guard Up +2", "name": "Guard Up", "level": 2}, {"raw": "Handicraft +2", "name": "Handicraft", "level": 2}, {"raw": "Horn Maestro +2", "name": "Horn Maestro", "level": 2}, {"raw": "Ice Attack +2", "name": "Ice Attack", "level": 2}, {"raw": "Load Shells +2", "name": "Load Shells", "level": 2}, {"raw": "Mind's Eye +2", "name": "Mind's Eye", "level": 2}, {"raw": "Offensive Guard +2", "name": "Offensive Guard", "level": 2}, {"raw": "Opening Shot +2", "name": "Opening Shot", "level": 2}, {"raw": "Paralysis Attack +2", "name": "Paralysis Attack", "level": 2}, {"raw": "Poison Attack +2", "name": "Poison Attack", "level": 2}, {"raw": "Poison Boost +1", "name": "Poison Boost", "level": 1}, {"raw": "Poison Functionality +1", "name": "Poison Functionality", "level": 1}, {"raw": "Power Prolonger +2", "name": "Power Prolonger", "level": 2}, {"raw": "Protective Polish +2", "name": "Protective Polish", "level": 2}, {"raw": "Punishing Draw +2", "name": "Punishing Draw", "level": 2}, {"raw": "Rapid Morph +2", "name": "Rapid Morph", "level": 2}, {"raw": "Razor Sharp +2", "name": "Razor Sharp", "level": 2}, {"raw": "Sleep Attack +2", "name": "Sleep Attack", "level": 2}, {"raw": "Slugger +2", "name": "Slugger", "level": 2}, {"raw": "Special Ammo Boost +2", "name": "Special Ammo Boost", "level": 2}, {"raw": "Speed Sharpening +2", "name": "Speed Sharpening", "level": 2}, {"raw": "Stamina Thief +2", "name": "Stamina Thief", "level": 2}, {"raw": "Tetrad Shot +2", "name": "Tetrad Shot", "level": 2}, {"raw": "Thunder Attack +2", "name": "Thunder Attack", "level": 2}, {"raw": "Water Attack +2", "name": "Water Attack", "level": 2}, {"raw": "Group 9", "name": "Group 9", "level": null}, {"raw": "Skill Level", "name": "Skill Level", "level": null}, {"raw": "2", "name": "2", "level": null}, {"raw": "Group 5", "name": "Group 5", "level": null}], "Group 3": [{"raw": "Artillery +3", "name": "Artillery", "level": 3}, {"raw": "Attack Boost +3", "name": "Attack Boost", "level": 3}, {"raw": "Ballistics +3", "name": "Ballistics", "level": 3}, {"raw": "Blast Attack +3", "name": "Blast Attack", "level": 3}, {"raw": "Bludgeoner +3", "name": "Bludgeoner", "level": 3}, {"raw": "Charge Master +3", "name": "Charge Master", "level": 3}, {"raw": "Critical Draw +3", "name": "Critical Draw", "level": 3}, {"raw": "Critical Element +3", "name": "Critical Element", "level": 3}, {"raw": "Critical Eye +3", "name": "Critical Eye", "level": 3}, {"raw": "Critical Status +3", "name": "Critical Status", "level": 3}, {"raw": "Dragon Attack +3", "name": "Dragon Attack", "level": 3}, {"raw": "Fire Attack +3", "name": "Fire Attack", "level": 3}, {"raw": "Focus +3", "name": "Focus", "level": 3}, {"raw": "Guard +3", "name": "Guard", "level": 3}, {"raw": "Guard Up +3", "name": "Guard Up", "level": 3}, {"raw": "Handicraft +3", "name": "Handicraft", "level": 3}, {"raw": "Ice Attack +3", "name": "Ice Attack", "level": 3}, {"raw": "Master’s Touch +1", "name": "Master’s Touch", "level": 1}, {"raw": "Mind's Eye +3", "name": "Mind's Eye", "level": 3}, {"raw": "Normal/Rapid Up +1", "name": "Normal/Rapid Up", "level": 1}, {"raw": "Offensive Guard +3", "name": "Offensive Guard", "level": 3}, {"raw": "Opening Shot +3", "name": "Opening Shot", "level": 3}, {"raw": "Paralysis Attack +3", "name": "Paralysis Attack", "level": 3}, {"raw": "Paralysis Functionality +1", "name": "Paralysis Functionality", "level": 1}, {"raw": "Piercing Shot +1", "name": "Piercing Shot", "level": 1}, {"raw": "Poison Attack +3", "name": "Poison Attack", "level": 3}, {"raw": "Power Prolonger +3", "name": "Power Prolonger", "level": 3}, {"raw": "Protective Polish +3", "name": "Protective Polish", "level": 3}, {"raw": "Punishing Draw +3", "name": "Punishing Draw", "level": 3}, {"raw": "Rapid Fire Up +1", "name": "Rapid Fire Up", "level": 1}, {"raw": "Rapid Morph +3", "name": "Rapid Morph", "level": 3}, {"raw": "Razor Sharp +3", "name": "Razor Sharp", "level": 3}, {"raw": "Sleep Attack +3", "name": "Sleep Attack", "level": 3}, {"raw": "Sleep Functionality +1", "name": "Sleep Functionality", "level": 1}, {"raw": "Slugger +3", "name": "Slugger", "level": 3}, {"raw": "Spread/Power Shot +1", "name": "Spread/Power Shot", "level": 1}, {"raw": "Stamina Thief +3", "name": "Stamina Thief", "level": 3}, {"raw": "Tetrad Shot +3", "name": "Tetrad Shot", "level": 3}, {"raw": "Thunder Attack +3", "name": "Thunder Attack", "level": 3}, {"raw": "Water Attack +3", "name": "Water Attack", "level": 3}, {"raw": "Skill Name", "name": "Skill Name", "level": null}, {"raw": "キノコ大好き", "name": "キノコ大好き", "level": null}, {"raw": "スタミナ急速回復", "name": "スタミナ急速回復", "level": null}, {"raw": "フルチャージ", "name": "フルチャージ", "level": null}, {"raw": "回選性能", "name": "回選性能", "level": null}, {"raw": "回遊距離UP", "name": "回遊距離UP", "level": null}, {"raw": "属性やられ耐性", "name": "属性やられ耐性", "level": null}, {"raw": "急襲", "name": "急襲", "level": null}, {"raw": "盩備", "name": "盩備", "level": null}, {"raw": "渾身", "name": "渾身", "level": null}, {"raw": "火事場力", "name": "火事場力", "level": null}, {"raw": "災禍転福", "name": "災禍転福", "level": null}, {"raw": "破壞王", "name": "破壞王", "level": null}, {"raw": "耳栓", "name": "耳栓", "level": null}, {"raw": "逆恨み", "name": "逆恨み", "level": null}, {"raw": "Skill Level", "name": "Skill Level", "level": null}, {"raw": "アイテム使用強化", "name": "アイテム使用強化", "level": null}, {"raw": "ひるみ軽減", "name": "ひるみ軽減", "level": null}, {"raw": "ボマー", "name": "ボマー", "level": null}, {"raw": "ランナー", "name": "ランナー", "level": null}, {"raw": "体力回復量UP", "name": "体力回復量UP", "level": null}, {"raw": "体術", "name": "体術", "level": null}, {"raw": "回復速度", "name": "回復速度", "level": null}, {"raw": "地質学", "name": "地質学", "level": null}, {"raw": "威鴟", "name": "威鴟", "level": null}, {"raw": "広域化", "name": "広域化", "level": null}, {"raw": "悪臭耐性", "name": "悪臭耐性", "level": null}, {"raw": "拘束耐性", "name": "拘束耐性", "level": null}, {"raw": "早食い", "name": "早食い", "level": null}, {"raw": "植生学", "name": "植生学", "level": null}, {"raw": "毒耐性", "name": "毒耐性", "level": null}, {"raw": "気絶耐性", "name": "気絶耐性", "level": null}, {"raw": "水場•油泥適店", "name": "水場•油泥適店", "level": null}, {"raw": "水耐性", "name": "水耐性", "level": null}, {"raw": "氷耐性", "name": "氷耐性", "level": null}, {"raw": "溝足感", "name": "溝足感", "level": null}, {"raw": "火耐性", "name": "火耐性", "level": null}, {"raw": "無我の境地", "name": "無我の境地", "level": null}, {"raw": "爆破やられ耐性", "name": "爆破やられ耐性", "level": null}, {"raw": "環境利用の知識", "name": "環境利用の知識", "level": null}, {"raw": "環境適応", "name": "環境適応", "level": null}, {"raw": "睡眠耐性", "name": "睡眠耐性", "level": null}, {"raw": "精霊の加護", "name": "精霊の加護", "level": null}, {"raw": "納刀術", "name": "納刀術", "level": null}, {"raw": "耐鸞", "name": "耐鸞", "level": null}, {"raw": "腹減り耐性", "name": "腹減り耐性", "level": null}, {"raw": "裂傷耐性", "name": "裂傷耐性", "level": null}, {"raw": "防御", "name": "防御", "level": null}, {"raw": "防御力DOWN耐", "name": "防御力DOWN耐", "level": null}, {"raw": "雷耐性", "name": "雷耐性", "level": null}, {"raw": "風圧耐性", "name": "風圧耐性", "level": null}, {"raw": "麻痺耐性", "name": "麻痺耐性", "level": null}, {"raw": "龍耐性", "name": "龍耐性", "level": null}], "Group 4": [{"raw": "Attack Boost +2", "name": "Attack Boost", "level": 2}, {"raw": "Ballistics +2", "name": "Ballistics", "level": 2}, {"raw": "Blast Attack +2", "name": "Blast Attack", "level": 2}, {"raw": "Critical Boost +1", "name": "Critical Boost", "level": 1}, {"raw": "Critical Element +2", "name": "Critical Element", "level": 2}, {"raw": "Critical Eye +2", "name": "Critical Eye", "level": 2}, {"raw": "Dragon Attack +2", "name": "Dragon Attack", "level": 2}, {"raw": "Fire Attack +2", "name": "Fire Attack", "level": 2}, {"raw": "Guard +2", "name": "Guard", "level": 2}, {"raw": "Guard Up +2", "name": "Guard Up", "level": 2}, {"raw": "Handicraft +2", "name": "Handicraft", "level": 2}, {"raw": "Ice Attack +2", "name": "Ice Attack", "level": 2}, {"raw": "Opening Shot +2", "name": "Opening Shot", "level": 2}, {"raw": "Paralysis Attack +2", "name": "Paralysis Attack", "level": 2}, {"raw": "Poison Attack +2", "name": "Poison Attack", "level": 2}, {"raw": "Protective Polish +2", "name": "Protective Polish", "level": 2}, {"raw": "Razor Sharp +2", "name": "Razor Sharp", "level": 2}, {"raw": "Sleep Attack +2", "name": "Sleep Attack", "level": 2}, {"raw": "Tetrad Shot +2", "name": "Tetrad Shot", "level": 2}, {"raw": "Thunder Attack +2", "name": "Thunder Attack", "level": 2}, {"raw": "Water Attack +2", "name": "Water Attack", "level": 2}, {"raw": "Skill Level", "name": "Skill Level", "level": null}], "Group 5": [{"raw": "Antivirus +1", "name": "Antivirus", "level": 1}, {"raw": "Aquatic/Amphibious +1", "name": "Aquatic/Amphibious", "level": 1}, {"raw": "Bind Resistance +1", "name": "Bind Resistance", "level": 1}, {"raw": "Blastblight Resistance +1", "name": "Blastblight Resistance", "level": 1}, {"raw": "Bleeding Resistance +1", "name": "Bleeding Resistance", "level": 1}, {"raw": "Bombardier +1", "name": "Bombardier", "level": 1}, {"raw": "Botanist +2", "name": "Botanist", "level": 2}, {"raw": "Constitution +2", "name": "Constitution", "level": 2}, {"raw": "Defense Boost +2", "name": "Defense Boost", "level": 2}, {"raw": "Defense Down Resistance +1", "name": "Defense Down Resistance", "level": 1}, {"raw": "Divine Blessing +1", "name": "Divine Blessing", "level": 1}, {"raw": "Dragon Resistance +1", "name": "Dragon Resistance", "level": 1}, {"raw": "Environmental Adaptability +1", "name": "Environmental Adaptability", "level": 1}, {"raw": "Environmental Exploiter +1", "name": "Environmental Exploiter", "level": 1}, {"raw": "Fire Resistance +1", "name": "Fire Resistance", "level": 1}, {"raw": "Flinch Free +1", "name": "Flinch Free", "level": 1}, {"raw": "Foul Resistance +1", "name": "Foul Resistance", "level": 1}, {"raw": "Free Meal +1", "name": "Free Meal", "level": 1}, {"raw": "Geologist +1", "name": "Geologist", "level": 1}, {"raw": "Hunger Resistance +1", "name": "Hunger Resistance", "level": 1}, {"raw": "Ice Resistance +1", "name": "Ice Resistance", "level": 1}, {"raw": "Intimidator +1", "name": "Intimidator", "level": 1}, {"raw": "Item Prolonger +1", "name": "Item Prolonger", "level": 1}, {"raw": "Marathon Runner +1", "name": "Marathon Runner", "level": 1}, {"raw": "Paralysis Resistance +1", "name": "Paralysis Resistance", "level": 1}, {"raw": "Poison Resistance +1", "name": "Poison Resistance", "level": 1}, {"raw": "Quick Sheath +1", "name": "Quick Sheath", "level": 1}, {"raw": "Recovery Speed +1", "name": "Recovery Speed", "level": 1}, {"raw": "Recovery Up +1", "name": "Recovery Up", "level": 1}, {"raw": "Sleep Resistance +1", "name": "Sleep Resistance", "level": 1}, {"raw": "Speed Eating +1", "name": "Speed Eating", "level": 1}, {"raw": "Stun Resistance +1", "name": "Stun Resistance", "level": 1}, {"raw": "Thunder Resistance +1", "name": "Thunder Resistance", "level": 1}, {"raw": "Tremor Resistance +1", "name": "Tremor Resistance", "level": 1}, {"raw": "Water Resistance +1", "name": "Water Resistance", "level": 1}, {"raw": "Wide-Range +2", "name": "Wide-Range", "level": 2}, {"raw": "Windproof +1", "name": "Windproof", "level": 1}], "Group 6": [{"raw": "Antivirus +2", "name": "Antivirus", "level": 2}, {"raw": "Aquatic/Amphibious +2", "name": "Aquatic/Amphibious", "level": 2}, {"raw": "Bind Resistance +2", "name": "Bind Resistance", "level": 2}, {"raw": "Blastblight Resistance +2", "name": "Blastblight Resistance", "level": 2}, {"raw": "Bleeding Resistance +2", "name": "Bleeding Resistance", "level": 2}, {"raw": "Bombardier +2", "name": "Bombardier", "level": 2}, {"raw": "Botanist +2", "name": "Botanist", "level": 2}, {"raw": "Constitution +2", "name": "Constitution", "level": 2}, {"raw": "Defense Boost +2", "name": "Defense Boost", "level": 2}, {"raw": "Defense Down Resistance +2", "name": "Defense Down Resistance", "level": 2}, {"raw": "Divine Blessing +2", "name": "Divine Blessing", "level": 2}, {"raw": "Dragon Resistance +2", "name": "Dragon Resistance", "level": 2}, {"raw": "Environmental Adaptability +2", "name": "Environmental Adaptability", "level": 2}, {"raw": "Environmental Exploiter +2", "name": "Environmental Exploiter", "level": 2}, {"raw": "Fire Resistance +2", "name": "Fire Resistance", "level": 2}, {"raw": "Flinch Free +2", "name": "Flinch Free", "level": 2}, {"raw": "Foul Resistance +2", "name": "Foul Resistance", "level": 2}, {"raw": "Free Meal +2", "name": "Free Meal", "level": 2}, {"raw": "Geologist +2", "name": "Geologist", "level": 2}, {"raw": "Hunger Resistance +2", "name": "Hunger Resistance", "level": 2}, {"raw": "Ice Resistance +2", "name": "Ice Resistance", "level": 2}, {"raw": "Intimidator +2", "name": "Intimidator", "level": 2}, {"raw": "Item Prolonger +2", "name": "Item Prolonger", "level": 2}, {"raw": "Marathon Runner +2", "name": "Marathon Runner", "level": 2}, {"raw": "Paralysis Resistance +2", "name": "Paralysis Resistance", "level": 2}, {"raw": "Poison Resistance +2", "name": "Poison Resistance", "level": 2}, {"raw": "Quick Sheath +2", "name": "Quick Sheath", "level": 2}, {"raw": "Recovery Speed +2", "name": "Recovery Speed", "level": 2}, {"raw": "Recovery Up +2", "name": "Recovery Up", "level": 2}, {"raw": "Sleep Resistance +2", "name": "Sleep Resistance", "level": 2}, {"raw": "Speed Eating +2", "name": "Speed Eating", "level": 2}, {"raw": "Stun Resistance +2", "name": "Stun Resistance", "level": 2}, {"raw": "Thunder Resistance +2", "name": "Thunder Resistance", "level": 2}, {"raw": "Tremor Resistance +2", "name": "Tremor Resistance", "level": 2}, {"raw": "Water Resistance +2", "name": "Water Resistance", "level": 2}, {"raw": "Wide-Range +2", "name": "Wide-Range", "level": 2}, {"raw": "Windproof +2", "name": "Windproof", "level": 2}], "Group 7": [{"raw": "Antivirus +3", "name": "Antivirus", "level": 3}, {"raw": "Bind Resistance +3", "name": "Bind Resistance", "level": 3}, {"raw": "Blastblight Resistance +3", "name": "Blastblight Resistance", "level": 3}, {"raw": "Bleeding Resistance +3", "name": "Bleeding Resistance", "level": 3}, {"raw": "Bombardier +3", "name": "Bombardier", "level": 3}, {"raw": "Botanist +4", "name": "Botanist", "level": 4}, {"raw": "Constitution +4", "name": "Constitution", "level": 4}, {"raw": "Defense Boost +4", "name": "Defense Boost", "level": 4}, {"raw": "Defense Down Resistance +3", "name": "Defense Down Resistance", "level": 3}, {"raw": "Divine Blessing +3", "name": "Divine Blessing", "level": 3}, {"raw": "Dragon Resistance +3", "name": "Dragon Resistance", "level": 3}, {"raw": "Environmental Exploiter +3", "name": "Environmental Exploiter", "level": 3}, {"raw": "Fire Resistance +3", "name": "Fire Resistance", "level": 3}, {"raw": "Flinch Free +3", "name": "Flinch Free", "level": 3}, {"raw": "Free Meal +3", "name": "Free Meal", "level": 3}, {"raw": "Geologist +3", "name": "Geologist", "level": 3}, {"raw": "Hunger Resistance +3", "name": "Hunger Resistance", "level": 3}, {"raw": "Ice Resistance +3", "name": "Ice Resistance", "level": 3}, {"raw": "Intimidator +3", "name": "Intimidator", "level": 3}, {"raw": "Item Prolonger +3", "name": "Item Prolonger", "level": 3}, {"raw": "Marathon Runner +3", "name": "Marathon Runner", "level": 3}, {"raw": "Paralysis Resistance +3", "name": "Paralysis Resistance", "level": 3}, {"raw": "Poison Resistance +3", "name": "Poison Resistance", "level": 3}, {"raw": "Quick Sheath +3", "name": "Quick Sheath", "level": 3}, {"raw": "Recovery Speed +3", "name": "Recovery Speed", "level": 3}, {"raw": "Recovery Up +3", "name": "Recovery Up", "level": 3}, {"raw": "Sleep Resistance +3", "name": "Sleep Resistance", "level": 3}, {"raw": "Speed Eating +3", "name": "Speed Eating", "level": 3}, {"raw": "Stun Resistance +3", "name": "Stun Resistance", "level": 3}, {"raw": "Thunder Resistance +3", "name": "Thunder Resistance", "level": 3}, {"raw": "Tremor Resistance +3", "name": "Tremor Resistance", "level": 3}, {"raw": "Water Resistance +3", "name": "Water Resistance", "level": 3}, {"raw": "Wide-Range +4", "name": "Wide-Range", "level": 4}, {"raw": "Windproof +3", "name": "Windproof", "level": 3}], "Group 8": [{"raw": "Ambush +1", "name": "Ambush", "level": 1}, {"raw": "Blight Resistance +1", "name": "Blight Resistance", "level": 1}, {"raw": "Coalescence +1", "name": "Coalescence", "level": 1}, {"raw": "Earplugs +1", "name": "Earplugs", "level": 1}, {"raw": "Evade Extender +1", "name": "Evade Extender", "level": 1}, {"raw": "Evade Window +2", "name": "Evade Window", "level": 2}, {"raw": "Heroics +2", "name": "Heroics", "level": 2}, {"raw": "Maximum Might +1", "name": "Maximum Might", "level": 1}, {"raw": "Mushroomancer +1", "name": "Mushroomancer", "level": 1}, {"raw": "Partbreaker +1", "name": "Partbreaker", "level": 1}, {"raw": "Peak Performance +1", "name": "Peak Performance", "level": 1}, {"raw": "Resentment +1", "name": "Resentment", "level": 1}, {"raw": "Stamina Surge +1", "name": "Stamina Surge", "level": 1}, {"raw": "Tool Specialist +2", "name": "Tool Specialist", "level": 2}, {"raw": "Counterstrike +1", "name": "Counterstrike", "level": 1}], "Group 9": [{"raw": "Ambush +2", "name": "Ambush", "level": 2}, {"raw": "Blight Resistance +2", "name": "Blight Resistance", "level": 2}, {"raw": "Coalescence +2", "name": "Coalescence", "level": 2}, {"raw": "Earplugs +2", "name": "Earplugs", "level": 2}, {"raw": "Evade Extender +2", "name": "Evade Extender", "level": 2}, {"raw": "Evade Window +3", "name": "Evade Window", "level": 3}, {"raw": "Heroics +3", "name": "Heroics", "level": 3}, {"raw": "Maximum Might +2", "name": "Maximum Might", "level": 2}, {"raw": "Mushroomancer +2", "name": "Mushroomancer", "level": 2}, {"raw": "Partbreaker +2", "name": "Partbreaker", "level": 2}, {"raw": "Peak Performance +2", "name": "Peak Performance", "level": 2}, {"raw": "Resentment +2", "name": "Resentment", "level": 2}, {"raw": "Stamina Surge +2", "name": "Stamina Surge", "level": 2}, {"raw": "Tool Specialist +3", "name": "Tool Specialist", "level": 3}, {"raw": "Counterstrike +2", "name": "Counterstrike", "level": 2}], "Group 10": [{"raw": "Adrenaline Rush +1", "name": "Adrenaline Rush", "level": 1}, {"raw": "Agitator +1", "name": "Agitator", "level": 1}, {"raw": "Burst +1", "name": "Burst", "level": 1}, {"raw": "Elemental Conversion +1", "name": "Elemental Conversion", "level": 1}, {"raw": "Elemental Exploit +1", "name": "Elemental Exploit", "level": 1}, {"raw": "Flayer +1", "name": "Flayer", "level": 1}, {"raw": "Latent Power +1", "name": "Latent Power", "level": 1}, {"raw": "Offensive Guard +1", "name": "Offensive Guard", "level": 1}, {"raw": "Weakness Exploit +1", "name": "Weakness Exploit", "level": 1}]}, "records": [{"rarity": "Rare 5", "g1": "Group 1", "g2": "Group 6", "g3": "Group 6", "slots": ["①①", "②", "②①", "③"]}, {"rarity": "Rare 5", "g1": "Group 1", "g2": "Group 7", "g3": null, "slots": ["①①", "②", "②①", "③"]}, {"rarity": "Rare 5", "g1": "Group 1", "g2": "Group 8", "g3": "Group 6", "slots": ["①①", "②", "②①", "③"]}, {"rarity": "Rare 5", "g1": "Group 1", "g2": "Group 8", "g3": "Group 8", "slots": ["①①", "②", "②①", "③"]}, {"rarity": "Rare 5", "g1": "Group 1", "g2": "Group 9", "g3": null, "slots": ["①①", "②", "②①", "③"]}, {"rarity": "Rare 5", "g1": "Group 1", "g2": "Group 10", "g3": null, "slots": ["①①", "②", "②①", "③"]}, {"rarity": "Rare 6", "g1": "Group 1", "g2": "Group 1", "g3": "Group 7", "slots": ["①", "①①", "②", "②①"]}, {"rarity": "Rare 6", "g1": "Group 1", "g2": "Group 1", "g3": "Group 10", "slots": ["①", "①①", "②", "②①"]}, {"rarity": "Rare 6", "g1": "Group 2", "g2": "Group 6", "g3": "Group 6", "slots": ["①", "①①", "②", "②①"]}, {"rarity": "Rare 6", "g1": "Group 2", "g2": "Group 8", "g3": "Group 6", "slots": ["①", "①①", "②", "②①"]}, {"rarity": "Rare 6", "g1": "Group 2", "g2": "Group 8", "g3": "Group 8", "slots": ["①", "①①", "②", "②①"]}, {"rarity": "Rare 6", "g1": "Group 2", "g2": "Group 9", "g3": null, "slots": ["①", "①①", "②", "②①"]}, {"rarity": "Rare 6", "g1": "Group 2", "g2": "Group 10", "g3": null, "slots": ["①", "①①", "②", "②①"]}, {"rarity": "Rare 7", "g1": "Group 2", "g2": "Group 1", "g3": "Group 7", "slots": ["①", "①①", "②"]}, {"rarity": "Rare 7", "g1": "Group 2", "g2": "Group 1", "g3": "Group 8", "slots": ["①①", "②", "③"]}, {"rarity": "Rare 7", "g1": "Group 2", "g2": "Group 1", "g3": "Group 10", "slots": ["①", "①①", "②"]}, {"rarity": "Rare 7", "g1": "Group 3", "g2": "Group 6", "g3": "Group 5", "slots": ["①", "①①", "②"]}, {"rarity": "Rare 7", "g1": "Group 3", "g2": "Group 7", "g3": null, "slots": ["①", "①①", "②"]}, {"rarity": "Rare 7", "g1": "Group 3", "g2": "Group 8", "g3": "Group 5", "slots": ["①", "①①", "②"]}, {"rarity": "Rare 7", "g1": "Group 3", "g2": "Group 10", "g3": null, "slots": ["①", "①①", "②"]}, {"rarity": "Rare 7", "g1": "Group 4", "g2": "Group 1", "g3": "Group 1", "slots": ["①", "①①", "②"]}, {"rarity": "Rare 8", "g1": "Group 2", "g2": "Group 1", "g3": "Group 7", "slots": ["W①", "W①①", "W①①①"]}, {"rarity": "Rare 8", "g1": "Group 2", "g2": "Group 1", "g3": "Group 8", "slots": ["W①", "W①①", "W①①①"]}, {"rarity": "Rare 8", "g1": "Group 2", "g2": "Group 1", "g3": "Group 10", "slots": ["W①", "W①①", "W①①①"]}, {"rarity": "Rare 8", "g1": "Group 3", "g2": "Group 6", "g3": "Group 5", "slots": ["W①", "W①①", "W①①①"]}, {"rarity": "Rare 8", "g1": "Group 3", "g2": "Group 7", "g3": null, "slots": ["W①", "W①①", "W①①①"]}, {"rarity": "Rare 8", "g1": "Group 3", "g2": "Group 8", "g3": "Group 5", "slots": ["W①", "W①①", "W①①①"]}, {"rarity": "Rare 8", "g1": "Group 3", "g2": "Group 10", "g3": null, "slots": ["W①", "W①①", "W①①①"]}, {"rarity": "Rare 8", "g1": "Group 4", "g2": "Group 1", "g3": "Group 1", "slots": ["W①", "W①①", "W①①①"]}], "levelsByName": {"Adrenaline Rush": [1], "Agitator": [1], "Airborne": [1], "Ambush": [1, 2], "Antivirus": [1, 2, 3], "Aquatic/Amphibious": [1, 2], "Artillery": [1, 2, 3], "Attack Boost": [1, 2, 3], "Ballistics": [1, 2, 3], "Bind Resistance": [1, 2, 3], "Blast Attack": [1, 2, 3], "Blast Functionality": [1], "Blastblight Resistance": [1, 2, 3], "Bleeding Resistance": [1, 2, 3], "Blight Resistance": [1, 2], "Bludgeoner": [1, 2, 3], "Bombardier": [1, 2, 3], "Botanist": [2, 4], "Burst": [1], "Charge Master": [1, 2, 3], "Charge Up": [1], "Coalescence": [1, 2], "Constitution": [2, 4], "Counterstrike": [1, 2], "Critical Boost": [1], "Critical Draw": [1, 2, 3], "Critical Element": [1, 2, 3], "Critical Eye": [1, 2, 3], "Critical Status": [1, 2, 3], "Defense Boost": [2, 4], "Defense Down Resistance": [1, 2, 3], "Divine Blessing": [1, 2, 3], "Dragon Attack": [1, 2, 3], "Dragon Resistance": [1, 2, 3], "Earplugs": [1, 2], "Elemental Conversion": [1], "Elemental Exploit": [1], "Environmental Adaptability": [1, 2], "Environmental Exploiter": [1, 2, 3], "Evade Extender": [1, 2], "Evade Window": [2, 3], "Exhaust Functionality": [1], "Fire Attack": [1, 2, 3], "Fire Resistance": [1, 2, 3], "Flayer": [1], "Flinch Free": [1, 2, 3], "Focus": [1, 2, 3], "Foul Resistance": [1, 2], "Free Meal": [1, 2, 3], "Geologist": [1, 2, 3], "Guard": [1, 2, 3], "Guard Up": [1, 2, 3], "Handicraft": [1, 2, 3], "Heroics": [2, 3], "Horn Maestro": [1, 2], "Hunger Resistance": [1, 2, 3], "Ice Attack": [1, 2, 3], "Ice Resistance": [1, 2, 3], "Intimidator": [1, 2, 3], "Item Prolonger": [1, 2, 3], "Latent Power": [1], "Load Shells": [1, 2], "Marathon Runner": [1, 2, 3], "Maximum Might": [1, 2], "Mind's Eye": [1, 2, 3], "Mushroomancer": [1, 2], "Normal/Rapid Up": [1], "Offensive Guard": [1, 2, 3], "Opening Shot": [1, 2, 3], "Paralysis Attack": [1, 2, 3], "Paralysis Functionality": [1], "Paralysis Resistance": [1, 2, 3], "Partbreaker": [1, 2], "Peak Performance": [1, 2], "Piercing Shot": [1], "Poison Attack": [2, 3], "Poison Boost": [1], "Poison Functionality": [1], "Poison Resistance": [1, 2, 3], "Power Prolonger": [1, 2, 3], "Protective Polish": [1, 2, 3], "Punishing Draw": [1, 2, 3], "Quick Sheath": [1, 2, 3], "Rapid Fire Up": [1], "Rapid Morph": [1, 2, 3], "Razor Sharp": [1, 2, 3], "Recovery Speed": [1, 2, 3], "Recovery Up": [1, 2, 3], "Resentment": [1, 2], "Sleep Attack": [1, 2, 3], "Sleep Functionality": [1], "Sleep Resistance": [1, 2, 3], "Slugger": [1, 2, 3], "Special Ammo Boost": [1, 2], "Speed Eating": [1, 2, 3], "Speed Sharpening": [1, 2], "Spread/Power Shot": [1], "Stamina Surge": [1, 2], "Stamina Thief": [1, 2, 3], "Stun Resistance": [1, 2, 3], "Tetrad Shot": [1, 2, 3], "Thunder Attack": [1, 2, 3], "Thunder Resistance": [1, 2, 3], "Tool Specialist": [2, 3], "Tremor Resistance": [1, 2, 3], "Water Attack": [1, 2, 3], "Water Resistance": [1, 2, 3], "Weakness Exploit": [1], "Wide-Range": [2, 4], "Windproof": [1, 2, 3]}, "skillNames": ["Adrenaline Rush", "Agitator", "Airborne", "Ambush", "Antivirus", "Aquatic/Amphibious", "Artillery", "Attack Boost", "Ballistics", "Bind Resistance", "Blast Attack", "Blast Functionality", "Blastblight Resistance", "Bleeding Resistance", "Blight Resistance", "Bludgeoner", "Bombardier", "Botanist", "Burst", "Charge Master", "Charge Up", "Coalescence", "Constitution", "Counterstrike", "Critical Boost", "Critical Draw", "Critical Element", "Critical Eye", "Critical Status", "Defense Boost", "Defense Down Resistance", "Divine Blessing", "Dragon Attack", "Dragon Resistance", "Earplugs", "Elemental Conversion", "Elemental Exploit", "Environmental Adaptability", "Environmental Exploiter", "Evade Extender", "Evade Window", "Exhaust Functionality", "Fire Attack", "Fire Resistance", "Flayer", "Flinch Free", "Focus", "Foul Resistance", "Free Meal", "Geologist", "Guard", "Guard Up", "Handicraft", "Heroics", "Horn Maestro", "Hunger Resistance", "Ice Attack", "Ice Resistance", "Intimidator", "Item Prolonger", "Latent Power", "Load Shells", "Marathon Runner", "Maximum Might", "Mind's Eye", "Mushroomancer", "Normal/Rapid Up", "Offensive Guard", "Opening Shot", "Paralysis Attack", "Paralysis Functionality", "Paralysis Resistance", "Partbreaker", "Peak Performance", "Piercing Shot", "Poison Attack", "Poison Boost", "Poison Functionality", "Poison Resistance", "Power Prolonger", "Protective Polish", "Punishing Draw", "Quick Sheath", "Rapid Fire Up", "Rapid Morph", "Razor Sharp", "Recovery Speed", "Recovery Up", "Resentment", "Sleep Attack", "Sleep Functionality", "Sleep Resistance", "Slugger", "Special Ammo Boost", "Speed Eating", "Speed Sharpening", "Spread/Power Shot", "Stamina Surge", "Stamina Thief", "Stun Resistance", "Tetrad Shot", "Thunder Attack", "Thunder Resistance", "Tool Specialist", "Tremor Resistance", "Water Attack", "Water Resistance", "Weakness Exploit", "Wide-Range", "Windproof"]};
+
+function baseName(raw) { if (!raw) return ""; const i = raw.indexOf(" +"); return (i === -1 ? raw : raw.slice(0,i)).trim(); }
+
+function makeOptions(sel, items, first) {
+  sel.innerHTML = "";
+  if (first !== undefined) { const o=document.createElement("option"); o.value=""; o.textContent=first; sel.appendChild(o); }
+  for (const it of items) { const o=document.createElement("option"); o.value=it; o.textContent=it; sel.appendChild(o); }
+}
+function refreshLevelOptions(skillSel, levelSel) {
+  const name = skillSel.value;
+  const levels = DATA.levelsByName[name] || [];
+  makeOptions(levelSel, levels.map(n=>String(n)), "Any level");
+}
+function populateSelectors() {
+  const names = DATA.skillNames || [];
+  makeOptions(document.getElementById("skillA"), names, "— (choose a skill)");
+  makeOptions(document.getElementById("skillB"), names, "— (optional)");
+  makeOptions(document.getElementById("skillC"), names, "— (optional)");
+  refreshLevelOptions(document.getElementById("skillA"), document.getElementById("levelA"));
+  refreshLevelOptions(document.getElementById("skillB"), document.getElementById("levelB"));
+  refreshLevelOptions(document.getElementById("skillC"), document.getElementById("levelC"));
+  document.getElementById("skillA").addEventListener("change", ()=>refreshLevelOptions(document.getElementById("skillA"), document.getElementById("levelA")));
+  document.getElementById("skillB").addEventListener("change", ()=>refreshLevelOptions(document.getElementById("skillB"), document.getElementById("levelB")));
+  document.getElementById("skillC").addEventListener("change", ()=>refreshLevelOptions(document.getElementById("skillC"), document.getElementById("levelC")));
+}
+
+function renderSlotChecks() {
+  const set = new Set();
+  for (const rec of DATA.records) for (const s of rec.slots) set.add(String(s).trim());
+  const have = new Set(Array.from(set));
+  const ordered = ["①", "①①", "②", "②①", "③", "W①", "W①①", "W①①①"].filter(s => have.has(s));
+  const box = document.getElementById("slotChecks");
+  box.innerHTML = "";
+  for (const s of ordered) {
+    const label = document.createElement("label");
+    const cb = document.createElement("input");
+    cb.type = "checkbox"; cb.value = s;
+    const span = document.createElement("span"); span.textContent = s;
+    label.appendChild(cb); label.appendChild(span); box.appendChild(label);
+  }
+}
+function getSelectedSlots() {
+  const out = [];
+  document.querySelectorAll('#slotChecks input[type="checkbox"]').forEach(cb=>{ if(cb.checked) out.push(cb.value); });
+  return out;
+}
+
+function readSelection() {
+  const sA = document.getElementById("skillA").value;
+  const sB = document.getElementById("skillB").value;
+  const sC = document.getElementById("skillC").value;
+  const lA = document.getElementById("levelA").value;
+  const lB = document.getElementById("levelB").value;
+  const lC = document.getElementById("levelC").value;
+  const req = [];
+  if (sA) req.push({name:sA, level: lA? parseInt(lA): null});
+  if (sB) req.push({name:sB, level: lB? parseInt(lB): null});
+  if (sC) req.push({name:sC, level: lC? parseInt(lC): null});
+  return req;
+}
+
+function skillsInGroup(g) { return DATA.groups[g] || []; }
+
+function matchesSelectedSkills(pickSet, req) {
+  if (req.length === 0) return false;
+  for (const r of req) {
+    let ok = false;
+    for (const raw of pickSet) {
+      if (r.level == null) { if (raw.startsWith(r.name)) { ok = true; break; } }
+      else { if (raw === r.name + " +" + r.level) { ok = true; break; } }
+    }
+    if (!ok) return false;
+  }
+  return true;
+}
+
+function aggregate() {
+  const req = readSelection();
+  const slotFilter = getSelectedSlots();
+  const bases = req.map(r=>r.name).map(baseName).filter(Boolean);
+  if (new Set(bases).size !== bases.length) return [];
+
+  const rows = [];
+  for (const rec of DATA.records) {
+    const groups = [rec.g1, rec.g2, rec.g3].filter(Boolean);
+    const arrays = groups.map(g => skillsInGroup(g));
+    if (req.length>0) {
+      const names = new Set([].concat(...arrays).map(it => it.name));
+      const intersects = req.some(r => names.has(r.name));
+      if (!intersects) continue;
+    }
+    const map = new Map();
+    function loop(i, picked) {
+      if (i===arrays.length) {
+        const baseArr = picked.map(p=>baseName(p.raw)).filter(Boolean);
+        if (new Set(baseArr).size !== baseArr.length) return;
+        const pickSet = new Set(picked.map(p=>p.raw));
+        if (!matchesSelectedSkills(pickSet, req)) return;
+        const sig = req.map(r => r.name + ":+ " + (r.level? r.level: "any")).join(", ");
+        for (const s of rec.slots) {
+          if (slotFilter.length && !slotFilter.includes(s)) continue;
+          const k = rec.rarity + "|" + sig + "|" + s;
+          map.set(k,(map.get(k)||0)+1);
+        }
+        return;
+      }
+      for (const it of arrays[i]) { picked.push(it); loop(i+1,picked); picked.pop(); }
+    }
+    loop(0, []);
+    for (const [k,v] of map.entries()) {
+      const [rarity,sig,slot] = k.split("|");
+      rows.push({rarity,sig,slot,total:v});
+    }
+  }
+  const m2 = new Map();
+  for (const r of rows) {
+    const k = r.rarity+"|"+r.sig+"|"+r.slot;
+    m2.set(k,(m2.get(k)||0)+r.total);
+  }
+  const out = Array.from(m2, ([k,v])=>{ const [rarity,sig,slot]=k.split("|"); return {rarity,sig,slot,total:v}; });
+  out.sort((a,b)=> a.rarity.localeCompare(b.rarity) || a.sig.localeCompare(b.sig) || a.slot.localeCompare(b.slot));
+  return out;
+}
+
+function sampleDetail(maxRows) {
+  const req = readSelection();
+  const slotFilter = getSelectedSlots();
+  const bases = req.map(r=>r.name).map(baseName).filter(Boolean);
+  if (new Set(bases).size !== bases.length) return [];
+
+  const out = []; let count=0;
+  for (const rec of DATA.records) {
+    const groups = [rec.g1, rec.g2, rec.g3].filter(Boolean);
+    const arrays = groups.map(g => DATA.groups[g] || []);
+    function loop(i,picked){
+      if (i===arrays.length) {
+        const baseArr = picked.map(p=>baseName(p.raw)).filter(Boolean);
+        if (new Set(baseArr).size !== baseArr.length) return;
+        const pickSet = new Set(picked.map(p=>p.raw));
+        if (!matchesSelectedSkills(pickSet, req)) return;
+        for (const s of rec.slots) {
+          if (slotFilter.length && !slotFilter.includes(s)) continue;
+          out.push({rarity:rec.rarity, slots:s, s1:picked[0]?.raw||"", s2:picked[1]?.raw||"", s3:picked[2]?.raw||""});
+          if (++count>=maxRows) return;
+        }
+        return;
+      }
+      for (const it of arrays[i]) { picked.push(it); loop(i+1,picked); if (count>=maxRows) return; picked.pop(); }
+    }
+    loop(0,[]);
+    if (count>=maxRows) break;
+  }
+  return out;
+}
+
+function renderAgg(rows) {
+  const tbody = document.querySelector("#aggTable tbody");
+  tbody.innerHTML = rows.map(r => `<tr><td><span class="pill">${r.rarity}</span></td><td>${r.sig||"(any levels)"}</td><td>${r.slot}</td><td><strong>${r.total.toLocaleString()}</strong></td></tr>`).join("");
+  const total = rows.reduce((s,r)=>s+r.total,0);
+  document.getElementById("summary").textContent = "Total possible talismans matching selection: " + total.toLocaleString();
+}
+function renderDetail(rows) {
+  const tbody = document.querySelector("#detailTable tbody");
+  tbody.innerHTML = rows.map(r => `<tr><td><span class="pill">${r.rarity}</span></td><td>${r.slots}</td><td>${r.s1}</td><td>${r.s2}</td><td>${r.s3}</td></tr>`).join("");
+}
+
+function clearAll(){
+  for (const id of ["skillA","skillB","skillC","levelA","levelB","levelC"]) {
+    const el = document.getElementById(id); if (el) el.value="";
+  }
+  document.querySelector("#aggTable tbody").innerHTML = "";
+  document.querySelector("#detailTable tbody").innerHTML = "";
+  document.getElementById("summary").textContent = "";
+  document.querySelectorAll('#slotChecks input[type="checkbox"]').forEach(cb=>cb.checked=false);
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+  populateSelectors();
+  renderSlotChecks();
+  document.getElementById("clearBtn").addEventListener("click", clearAll);
+  document.getElementById("runBtn").addEventListener("click", () => {
+    const agg = aggregate(); renderAgg(agg);
+    const maxRows = parseInt(document.getElementById("limit").value||"5000",10);
+    const sample = sampleDetail(maxRows); renderDetail(sample);
+  });
+});
+</script>
+</body>
+</html>
