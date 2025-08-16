@@ -501,8 +501,8 @@ const DATA = {
         "level": 3
       },
       {
-        "raw": "Normal/Rapid Up +1",
-        "name": "Normal/Rapid Up",
+        "raw": "Normal Shots +1",
+        "name": "Normal Shots",
         "level": 1
       },
       {
@@ -2090,7 +2090,7 @@ const DATA = {
       1,
       2
     ],
-    "Normal/Rapid Up": [
+    "Normal Shots": [
       1
     ],
     "Offensive Guard": [
@@ -2353,7 +2353,7 @@ const DATA = {
     "Maximum Might",
     "Mind's Eye",
     "Mushroomancer",
-    "Normal/Rapid Up",
+    "Normal Shots",
     "Offensive Guard",
     "Opening Shot",
     "Paralysis Attack",
