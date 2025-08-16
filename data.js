@@ -117,8 +117,8 @@ const DATA = {
         "level": 1
       },
       {
-        "raw": "Poison Boost +1",
-        "name": "Poison Boost",
+        "raw": "Poison Attack +1",
+        "name": "Poison Attack",
         "level": 1
       },
       {
