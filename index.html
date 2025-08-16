@@ -117,18 +117,31 @@
 
 <script src="data.js"></script>
   <script>
-function baseName(raw) { if (!raw) return ""; const i = raw.indexOf(" +"); return (i === -1 ? raw : raw.slice(0,i)).trim(); }
+
+function baseName(raw) {
+  if (!raw) return "";
+  const i = raw.indexOf(" +");
+  return (i === -1 ? raw : raw.slice(0,i)).trim();
+}
 
 function makeOptions(sel, items, first) {
   sel.innerHTML = "";
-  if (first !== undefined) { const o=document.createElement("option"); o.value=""; o.textContent=first; sel.appendChild(o); }
-  for (const it of items) { const o=document.createElement("option"); o.value=it; o.textContent=it; sel.appendChild(o); }
+  if (first !== undefined) {
+    const o=document.createElement("option");
+    o.value=""; o.textContent=first; sel.appendChild(o);
+  }
+  for (const it of items) {
+    const o=document.createElement("option");
+    o.value=it; o.textContent=it; sel.appendChild(o);
+  }
 }
+    
 function refreshLevelOptions(skillSel, levelSel) {
   const name = skillSel.value;
   const levels = DATA.levelsByName[name] || [];
-  makeOptions(levelSel, levels.map(n=>String(n)), "Any level");
+  makeOptions(levelSel, levels.map(n => String(n)), "Any level");
 }
+    
 function populateSelectors() {
   const names = DATA.skillNames || [];
   makeOptions(document.getElementById("skillA"), names, "— (choose a skill)");
@@ -157,6 +170,7 @@ function renderSlotChecks() {
     label.appendChild(cb); label.appendChild(span); box.appendChild(label);
   }
 }
+    
 function getSelectedSlots() {
   const out = [];
   document.querySelectorAll('#slotChecks input[type="checkbox"]').forEach(cb=>{ if(cb.checked) out.push(cb.value); });
@@ -177,7 +191,9 @@ function readSelection() {
   return req;
 }
 
-function skillsInGroup(g) { return DATA.groups[g] || []; }
+function skillsInGroup(g) {
+  return DATA.groups[g] || [];
+}
 
 function matchesSelectedSkills(pickSet, req) {
   if (req.length === 0) return false;
@@ -277,6 +293,7 @@ function renderAgg(rows) {
   const total = rows.reduce((s,r)=>s+r.total,0);
   document.getElementById("summary").textContent = "Total possible talismans matching selection: " + total.toLocaleString();
 }
+    
 function renderDetail(rows) {
   const tbody = document.querySelector("#detailTable tbody");
   tbody.innerHTML = rows.map(r => `<tr><td><span class="pill">${r.rarity}</span></td><td>${r.slots}</td><td>${r.s1}</td><td>${r.s2}</td><td>${r.s3}</td></tr>`).join("");
