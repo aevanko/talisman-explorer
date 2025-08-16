@@ -760,8 +760,8 @@ const DATA = {
         "level": 2
       },
       {
-        "raw": "Defense Down Resistance +1",
-        "name": "Defense Down Resistance",
+        "raw": "Iron Skin +1",
+        "name": "Iron Skin",
         "level": 1
       },
       {
@@ -947,8 +947,8 @@ const DATA = {
         "level": 3
       },
       {
-        "raw": "Defense Down Resistance +2",
-        "name": "Defense Down Resistance",
+        "raw": "Iron Skin +2",
+        "name": "Iron Skin",
         "level": 2
       },
       {
@@ -1129,8 +1129,8 @@ const DATA = {
         "level": 4
       },
       {
-        "raw": "Defense Down Resistance +3",
-        "name": "Defense Down Resistance",
+        "raw": "Iron Skin +3",
+        "name": "Iron Skin",
         "level": 3
       },
       {
@@ -1930,7 +1930,7 @@ const DATA = {
       3,
       4
     ],
-    "Defense Down Resistance": [
+    "Iron Skin": [
       1,
       2,
       3
@@ -2318,7 +2318,6 @@ const DATA = {
     "Critical Eye",
     "Critical Status",
     "Defense Boost",
-    "Defense Down Resistance",
     "Divine Blessing",
     "Dragon Attack",
     "Dragon Resistance",
@@ -2342,6 +2341,7 @@ const DATA = {
     "Hunger Resistance",
     "Ice Attack",
     "Ice Resistance",
+    "Iron Skin",
     "Intimidator",
     "Item Prolonger",
     "Latent Power",
