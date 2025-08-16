@@ -1,56 +1,74 @@
-<!doctype html>
+<!DOCTYPE html>
+<!--
+If you are reading this, it means you are poking around and if you find any errors please comment on my YouTube video!
+This was just a work of love and curiosity and actually my first time ever touching HTML and JS.
+
+The offline "research and planning" aspect of Monster Hunter is a community effort and I am proud if this can be a small
+contribution, or at least prompt someone else to go off and make a better version.
+
+I normally do not comment on or talk about data-mined stuff but the logic for these talismans are widely shared in both
+the JP and western community so I felt it was OK and it has no spoilers. Note they are subject to change.
+
+Happy Hunting!
+-->
 <html lang="en">
-<head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Talisman Explorer — Skill & Group Reference</title>
-<style>
-  :root { --bg:#0b0f14; --card:#121820; --muted:#94a3b8; --text:#e2e8f0; --border:#1f2937; --accent:#38bdf8; --accent2:#7dd3fc; }
-  * { box-sizing: border-box; }
-  body { background:var(--bg); color:var(--text); font-family: ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial; margin:0; }
-  .wrap { max-width:1100px; margin:32px auto; padding:0 16px; }
-  .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:20px; }
-  h1 { margin:0 0 6px 0; }
-  p.muted { color:var(--muted); margin-top:0; }
-  nav a { color:var(--accent2); text-decoration:none; }
-  nav a:hover { text-decoration:underline; }
-  .pill { display:inline-block; padding:2px 8px; border-radius:999px; font-size:12px; background:#0f1622; border:1px solid var(--border); color:var(--muted); margin-left:8px;}
-  details { border:1px solid var(--border); border-radius:12px; padding:10px 12px; background:#0f1622; margin:14px 0; }
-  summary { cursor:pointer; font-weight:700; color:var(--accent2); }
-  table { width:100%; border-collapse:collapse; margin-top:14px; font-size:14px; }
-  th,td { border-bottom:1px solid var(--border); text-align:left; padding:8px; vertical-align: top; }
-  th { color:var(--muted); font-weight:600; }
-  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; }
-  .section-card { background:#0f1622; border:1px solid var(--border); border-radius:12px; padding:12px; }
-  .section-card h3 { margin:0 0 8px 0; }
-  .banner-img { display: block; max-width: 100%; height: auto; margin: 0 auto 20px; border-radius: 12px; }
-  </style>
-</head>
-<body>
-<div class="wrap">
-  <div class="card">
-    <nav style="margin-bottom:10px;">
-      <a href="./index.html">← Back to Explorer</a>
-    </nav>
-    <h1>Skill & Group Reference</h1>
-    <p class="muted">This page lists all skills and the levels present in each group. It uses the same <code>DATA</code> as the Explorer.</p>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Talisman Explorer — Skill &amp; Group Reference</title>
+		<style>
+			:root { --bg:#0b0f14; --card:#121820; --muted:#94a3b8; --text:#e2e8f0; --border:#1f2937; --accent:#38bdf8; --accent2:#7dd3fc; }
+			* { box-sizing: border-box; }
+			body { background:var(--bg); color:var(--text); font-family: ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial; margin:0; }
+			.wrap { max-width:1100px; margin:32px auto; padding:0 16px; }
+			.card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:20px; }
+			h1 { margin:0 0 6px 0; }
+			p.muted { color:var(--muted); margin-top:0; }
+			nav a { color:var(--accent2); text-decoration:none; }
+			nav a:hover { text-decoration:underline; }
+			.pill { display:inline-block; padding:2px 8px; border-radius:999px; font-size:12px; background:#0f1622; border:1px solid var(--border); color:var(--muted); margin-left:8px;}
+			details { border:1px solid var(--border); border-radius:12px; padding:10px 12px; background:#0f1622; margin:14px 0; }
+			summary { cursor:pointer; font-weight:700; color:var(--accent2); }
+			table { width:100%; border-collapse:collapse; margin-top:14px; font-size:14px; }
+			th,td { border-bottom:1px solid var(--border); text-align:left; padding:8px; vertical-align: top; }
+			th { color:var(--muted); font-weight:600; }
+			.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; }
+			.section-card { background:#0f1622; border:1px solid var(--border); border-radius:12px; padding:12px; }
+			.section-card h3 { margin:0 0 8px 0; }
+			.banner-img { display: block; max-width: 100%; height: auto; margin: 0 auto 20px; border-radius: 12px; }
+      nav { margin-bottom: 10px; }
+		</style>
+	</head>
+	<body>
+		<div class="wrap">
+			<div class="card">
+					<a href="./index.html">← Back to Explorer</a>
+				</nav>
+				<h1>Skill &amp; Group Reference</h1>
+				<p class="muted">This page lists all skills and the levels present in each group. It uses the same <code>DATA</code> as the Explorer.</p>
 
-    <img src="./chart.png" alt="Skills Reference" class="banner-img">
-    
+				<img src="./chart.png" alt="Skills Reference" class="banner-img" loading="lazy" />
 
-    
-    <details closed>
-      <summary>All Skills & Levels <span id="skillCount" class="pill"></span></summary>
-      <table id="allSkills">
-        <thead><tr><th>Skill (English)</th><th>Levels</th></tr></thead>
-        <tbody></tbody>
-      </table>
-    </details>
+				<details>
+					<summary>All Skills &amp; Levels <span id="skillCount" class="pill"></span></summary>
+					<table id="allSkills">
+						<thead>
+							<tr>
+								<th>Skill (English)</th>
+								<th>Levels</th>
+							</tr>
+						</thead>
+						<tbody></tbody>
+					</table>
+				</details>
 
-    <h2 style="margin-top:18px;">Groups</h2>
-    <div id="groupGrid" class="grid"></div>
-  </div>
-</div>
+				<h2 style="margin-top:18px;">Groups</h2>
+				<div id="groupGrid" class="grid"></div>
+			</div>
+		</div>
+	</body>
+</html>
+
 
 <!-- Load the shared dataset FIRST (same folder as this file) -->
 <script src="./data.js"></script>
@@ -68,24 +86,29 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // 1) All Skills & Levels (from DATA.levelsByName)
-  const tbody = document.querySelector('#allSkills tbody');
-  const entries = Object.entries(DATA.levelsByName || {}).sort((a,b)=>a[0].localeCompare(b[0]));
+  const tbody = document.querySelector("#allSkills tbody");
+  const entries = Object.entries(DATA.levelsByName || {}).sort((a, b) =>
+    a[0].localeCompare(b[0]),
+  );
   for (const [name, levels] of entries) {
-    const tr = document.createElement('tr');
-    const tdName = document.createElement('td'); tdName.textContent = name;
-    const tdLvls = document.createElement('td'); tdLvls.textContent = Array.isArray(levels) ? levels.join(", ") : "";
-    tr.appendChild(tdName); tr.appendChild(tdLvls);
+    const tr = document.createElement("tr");
+    const tdName = document.createElement("td");
+    tdName.textContent = name;
+    const tdLvls = document.createElement("td");
+    tdLvls.textContent = Array.isArray(levels) ? levels.join(", ") : "";
+    tr.appendChild(tdName);
+    tr.appendChild(tdLvls);
     tbody.appendChild(tr);
   }
-  const count = document.getElementById('skillCount');
+  const count = document.getElementById("skillCount");
   if (count) count.textContent = `${entries.length} skills`;
 
   // 2) Groups (from DATA.groups)
-  const groupGrid = document.getElementById('groupGrid');
+  const groupGrid = document.getElementById("groupGrid");
   const groups = DATA.groups || {};
-  const groupNames = Object.keys(groups).sort((a,b)=>{
-    const na = parseInt((a.match(/\d+/)||[])[0]||"9999",10);
-    const nb = parseInt((b.match(/\d+/)||[])[0]||"9999",10);
+  const groupNames = Object.keys(groups).sort((a, b) => {
+    const na = parseInt((a.match(/\d+/) || [])[0] || "9999", 10);
+    const nb = parseInt((b.match(/\d+/) || [])[0] || "9999", 10);
     return na - nb || a.localeCompare(b);
   });
 
@@ -93,34 +116,41 @@ document.addEventListener("DOMContentLoaded", () => {
     const arr = groups[g] || [];
     // Map: skill name -> set of levels observed in this group
     const m = new Map();
-  for (const it of arr) {
-    if (!it || !it.name) continue;
-    // skip anything with null level or not in skillNames list
-    if (it.level === null) continue;
-    if (!DATA.skillNames.includes(it.name)) continue;
+    for (const it of arr) {
+      if (!it || !it.name) continue;
+      // skip anything with null level or not in skillNames list
+      if (it.level === null) continue;
+      if (!DATA.skillNames.includes(it.name)) continue;
 
-    if (!m.has(it.name)) m.set(it.name, new Set());
-    m.get(it.name).add(it.level);
-  }
+      if (!m.has(it.name)) m.set(it.name, new Set());
+      m.get(it.name).add(it.level);
+    }
     const rows = Array.from(m.entries())
-      .map(([name,set])=>({ name, levels:[...set].sort((a,b)=>a-b).join(", ") }))
-      .sort((a,b)=>a.name.localeCompare(b.name));
+      .map(([name, set]) => ({
+        name,
+        levels: [...set].sort((a, b) => a - b).join(", "),
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
 
-    const card = document.createElement('div');
-    card.className = 'section-card';
+    const card = document.createElement("div");
+    card.className = "section-card";
     card.innerHTML = `<h3>${g}
       <span class="pill">${rows.length} skills</span>
     </h3>`;
 
-    const table = document.createElement('table');
-    table.innerHTML = "<thead><tr><th>Skill</th><th>Skill Lv.</th></tr></thead>";
-    const tb = document.createElement('tbody');
+    const table = document.createElement("table");
+    table.innerHTML =
+      "<thead><tr><th>Skill</th><th>Skill Lv.</th></tr></thead>";
+    const tb = document.createElement("tbody");
 
     for (const r of rows) {
-      const tr = document.createElement('tr');
-      const td1 = document.createElement('td'); td1.textContent = r.name;
-      const td2 = document.createElement('td'); td2.textContent = r.levels || "—";
-      tr.appendChild(td1); tr.appendChild(td2);
+      const tr = document.createElement("tr");
+      const td1 = document.createElement("td");
+      td1.textContent = r.name;
+      const td2 = document.createElement("td");
+      td2.textContent = r.levels || "—";
+      tr.appendChild(td1);
+      tr.appendChild(td2);
       tb.appendChild(tr);
     }
 
@@ -129,6 +159,7 @@ document.addEventListener("DOMContentLoaded", () => {
     groupGrid.appendChild(card);
   }
 });
+
 </script>
 </body>
 </html>
