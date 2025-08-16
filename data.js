@@ -491,6 +491,11 @@ const DATA = {
         "level": 3
       },
       {
+        "raw": "Master's Touch +1",
+        "name": "Master's Touch",
+        "level": 1
+      },
+      {
         "raw": "Mind's Eye +3",
         "name": "Mind's Eye",
         "level": 3
@@ -2066,6 +2071,9 @@ const DATA = {
       2,
       3
     ],
+    "Master's Touch": [
+      1
+    ],
     "Maximum Might": [
       1,
       2
@@ -2337,6 +2345,7 @@ const DATA = {
     "Latent Power",
     "Load Shells",
     "Marathon Runner",
+    "Master's Touch",
     "Maximum Might",
     "Mind's Eye",
     "Mushroomancer",
