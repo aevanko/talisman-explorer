@@ -775,8 +775,8 @@ const DATA = {
         "level": 1
       },
       {
-        "raw": "Environmental Adaptability +1",
-        "name": "Environmental Adaptability",
+        "raw": "Adaptability +1",
+        "name": "Adaptability",
         "level": 1
       },
       {
@@ -962,8 +962,8 @@ const DATA = {
         "level": 2
       },
       {
-        "raw": "Environmental Adaptability +2",
-        "name": "Environmental Adaptability",
+        "raw": "Adaptability +2",
+        "name": "Adaptability",
         "level": 2
       },
       {
@@ -1957,7 +1957,7 @@ const DATA = {
     "Elemental Absorption": [
       1
     ],
-    "Environmental Adaptability": [
+    "Adaptability": [
       1,
       2
     ],
@@ -2286,6 +2286,7 @@ const DATA = {
     ]
   },
   "skillNames": [
+    "Adaptability",
     "Adrenaline Rush",
     "Agitator",
     "Airborne",
@@ -2323,7 +2324,6 @@ const DATA = {
     "Dragon Resistance",
     "Earplugs",
     "Elemental Absorption",
-    "Environmental Adaptability",
     "Environmental Exploiter",
     "Evade Extender",
     "Evade Window",
