@@ -720,8 +720,8 @@ const DATA = {
         "level": 1
       },
       {
-        "raw": "Aquatic/Amphibious +1",
-        "name": "Aquatic/Amphibious",
+        "raw": "Aquatic/Oilsilt Mobility +1",
+        "name": "Aquatic/Oilsilt Mobility",
         "level": 1
       },
       {
@@ -907,8 +907,8 @@ const DATA = {
         "level": 2
       },
       {
-        "raw": "Aquatic/Amphibious +2",
-        "name": "Aquatic/Amphibious",
+        "raw": "Aquatic/Oilsilt Mobility +2",
+        "name": "Aquatic/Oilsilt Mobility",
         "level": 2
       },
       {
@@ -1814,7 +1814,7 @@ const DATA = {
       2,
       3
     ],
-    "Aquatic/Amphibious": [
+    "Aquatic/Oilsilt Mobility": [
       1,
       2
     ],
@@ -2292,7 +2292,7 @@ const DATA = {
     "Airborne",
     "Ambush",
     "Antivirus",
-    "Aquatic/Amphibious",
+    "Aquatic/Oilsilt Mobility",
     "Artillery",
     "Attack Boost",
     "Ballistics",
