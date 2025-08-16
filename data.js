@@ -329,8 +329,8 @@ const DATA = {
         "level": 2
       },
       {
-        "raw": "Poison Boost +1",
-        "name": "Poison Boost",
+        "raw": "Poison Duration Up +1",
+        "name": "Poison Duration Up",
         "level": 1
       },
       {
@@ -2131,7 +2131,7 @@ const DATA = {
       2,
       3
     ],
-    "Poison Boost": [
+    "Poison Duration Up": [
       1
     ],
     "Poison Functionality": [
@@ -2363,7 +2363,7 @@ const DATA = {
     "Peak Performance",
     "Piercing Shot",
     "Poison Attack",
-    "Poison Boost",
+    "Poison Duration Up",
     "Poison Functionality",
     "Poison Resistance",
     "Power Prolonger",
