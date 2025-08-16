@@ -1,119 +1,143 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Talisman Explorer — v1.02.01 by @aevanko</title>
-<style>
-  :root { --bg:#0b0f14; --card:#121820; --muted:#94a3b8; --text:#e2e8f0; --border:#1f2937; --accent:#38bdf8; --accent2:#7dd3fc; }
-  body { background:var(--bg); color:var(--text); font-family: ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial; margin:0; }
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Talisman Explorer — v1.02.01 by @aevanko</title>
+		<style>
+			:root { --bg:#0b0f14; --card:#121820; --muted:#94a3b8; --text:#e2e8f0; --border:#1f2937; --accent:#38bdf8; --accent2:#7dd3fc; }
+			body { background:var(--bg); color:var(--text); font-family: ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial; margin:0; }
 
-  .wrap { max-width:1100px; margin:32px auto; padding:0 16px; box-sizing:border-box; }
-  .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:20px; }
+			.wrap { max-width:1100px; margin:32px auto; padding:0 16px; box-sizing:border-box; }
+			.card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:20px; }
 
-  .row { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px; align-items:end; }
-  label { font-size:12px; color:var(--muted); display:block; margin-bottom:6px; }
-  select, input[type="number"] { width:100%; background:#0f1622; color:#e2e8f0; border:1px solid var(--border); border-radius:10px; padding:10px 12px; font-size:14px; }
-  button { background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#001018; border:none; border-radius:12px; padding:10px 14px; font-weight:700; cursor:pointer; }
+			.row { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px; align-items:end; }
+			label { font-size:12px; color:var(--muted); display:block; margin-bottom:6px; }
+			select, input[type="number"] { width:100%; background:#0f1622; color:#e2e8f0; border:1px solid var(--border); border-radius:10px; padding:10px 12px; font-size:14px; }
+			button { background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#001018; border:none; border-radius:12px; padding:10px 14px; font-weight:700; cursor:pointer; }
 
-  .controls-row { grid-column:1 / -1; display:flex; gap:10px; justify-content:flex-start; }
+			.controls-row { grid-column:1 / -1; display:flex; gap:10px; justify-content:flex-start; }
 
-  .slot-grid { display:grid; grid-template-columns:repeat(8,max-content); gap:10px 16px; align-items:center; }
-  @media (max-width:900px){ .slot-grid { grid-template-columns:repeat(4,max-content); } }
-  .slot-grid label { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--border); border-radius:10px; background:#0f1622; }
+			.slot-grid { display:grid; grid-template-columns:repeat(8,max-content); gap:10px 16px; align-items:center; }
+			@media (max-width:900px){ .slot-grid { grid-template-columns:repeat(4,max-content); } }
+			.slot-grid label { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--border); border-radius:10px; background:#0f1622; }
 
-  table { width:100%; border-collapse:collapse; margin-top:14px; font-size:14px; }
-  th,td { border-bottom:1px solid var(--border); text-align:left; padding:10px 8px; vertical-align:top; }
-  th { color:var(--muted); font-weight:600; }
+			table { width:100%; border-collapse:collapse; margin-top:14px; font-size:14px; }
+			th,td { border-bottom:1px solid var(--border); text-align:left; padding:10px 8px; vertical-align:top; }
+			th { color:var(--muted); font-weight:600; }
 
-  .pill { display:inline-block; padding:2px 8px; border-radius:999px; font-size:12px; background:#0f1622; border:1px solid var(--border); color:var(--muted); }
-  .muted { color:var(--muted); }
-  hr.div { border:0; border-top:1px solid var(--border); margin:18px 0; }
+			.pill { display:inline-block; padding:2px 8px; border-radius:999px; font-size:12px; background:#0f1622; border:1px solid var(--border); color:var(--muted); }
+			.muted { color:var(--muted); }
+			hr.div { border:0; border-top:1px solid var(--border); margin:18px 0; }
 
-  .title-icon { height: 2.5em; vertical-align: middle; margin-left: 0px; margin-right: 4px; }
+			.title-icon { height: 2.5em; vertical-align: middle; margin-left: 0px; margin-right: 4px; }
 
-  /* Only affect the slot filter labels */
-  #slotChecks label { display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; background: #0f1622; font-size: 16px; }
-  #slotChecks input[type="checkbox"] { transform: scale(1.3); }
-  
-  .muted-link { color:var(--muted); text-decoration:none; }
-  .muted-link:hover { color:var(--accent2); text-decoration:underline; }
-  .muted-link:visited { color:var(--muted); }
-</style>
-</head>
-<body>
-  
-<div class="wrap">
-  <div class="card">
-<h1>
-  <img src="./gaijinhunter.png" class="title-icon" alt="Icon";">
-  Talisman Explorer — v1.02.01 by  
-  <a href="https://www.youtube.com/@gaijinhunter" 
-     style="color: var(--accent2); text-decoration: none;">
-     Gaijinhunter
-  </a>
-</h1>
-    
-    <p style="color: var(--muted);">
-      Pick up to 3 skills. Matching is order-agnostic.
-      <span style="margin: 0 10px;">|</span>
-      <a class="muted-link" href="./skills.html"> 📕 Skill &amp; Group Reference</a>
-    </p>
+			/* Only affect the slot filter labels */
+			#slotChecks label { display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; background: #0f1622; font-size: 16px; }
+			#slotChecks input[type="checkbox"] { transform: scale(1.3); }
 
-    <div class="row" id="selectors">
-      <div>
-        <label>Skill A</label>
-        <select id="skillA"><option value="">— (choose a skill)</option></select>
-        <label style="margin-top:6px;">Level (A)</label>
-        <select id="levelA"><option value="">Any level</option></select>
-      </div>
-      <div>
-        <label>Skill B</label>
-        <select id="skillB"><option value="">— (optional)</option></select>
-        <label style="margin-top:6px;">Level (B)</label>
-        <select id="levelB"><option value="">Any level</option></select>
-      </div>
-      <div>
-        <label>Skill C</label>
-        <select id="skillC"><option value="">— (optional)</option></select>
-        <label style="margin-top:6px;">Level (C)</label>
-        <select id="levelC"><option value="">Any level</option></select>
-      </div>
-      <div>
-        <label>Sample size</label>
-        <input id="limit" type="number" value="5000" min="100" step="100" />
-      </div>
-    </div>
-<br>
-    <div class="row">
-      <div style="grid-column: 1 / -1;">
-        <label style="display:block; margin-bottom:6px; color:#94a3b8;">Filter by Slots (optional)</label>
-        <div id="slotChecks" class="slot-grid"></div>
-      </div>
-    </div>
+			.muted-link { color:var(--muted); text-decoration:none; }
+			.muted-link:hover { color:var(--accent2); text-decoration:underline; }
+			.muted-link:visited { color:var(--muted); }
+		</style>
+	</head>
+	<body>
+		<div class="wrap">
+			<div class="card">
+				<h1>
+					<img src="./gaijinhunter.png" class="title-icon" alt="Icon";"> Talisman Explorer — v1.02.01 by
+					<a href="https://www.youtube.com/@gaijinhunter" style="color: var(--accent2); text-decoration: none;">
+						Gaijinhunter
+					</a>
+				</h1>
 
-    <div class="row">
-      <div class="controls-row">
-        <button id="clearBtn" type="button">Clear All</button>
-        <button id="runBtn">Search</button>
-      </div>
-    </div>
+				<p style="color: var(--muted);">
+					Pick up to 3 skills. Matching is order-agnostic.
+					<span style="margin: 0 10px;">|</span>
+					<a class="muted-link" href="./skills.html"> 📕 Skill &amp; Group Reference</a>
+				</p>
 
-    <div id="summary" class="muted" style="margin-top:8px;"></div>
-    <hr class="div">
+				<div class="row" id="selectors">
+					<div>
+						<label>Skill A</label>
+						<select id="skillA">
+							<option value="">— (choose a skill)</option>
+						</select>
+						<label style="margin-top:6px;">Level (A)</label>
+						<select id="levelA">
+							<option value="">Any level</option>
+						</select>
+					</div>
+					<div>
+						<label>Skill B</label>
+						<select id="skillB">
+							<option value="">— (optional)</option>
+						</select>
+						<label style="margin-top:6px;">Level (B)</label>
+						<select id="levelB">
+							<option value="">Any level</option>
+						</select>
+					</div>
+					<div>
+						<label>Skill C</label>
+						<select id="skillC">
+							<option value="">— (optional)</option>
+						</select>
+						<label style="margin-top:6px;">Level (C)</label>
+						<select id="levelC">
+							<option value="">Any level</option>
+						</select>
+					</div>
+					<div>
+						<label>Sample size</label>
+						<input id="limit" type="number" value="5000" min="100" step="100" />
+					</div>
+				</div>
+				<br />
+				<div class="row">
+					<div style="grid-column: 1 / -1;">
+						<label style="display:block; margin-bottom:6px; color:#94a3b8;">Filter by Slots (optional)</label>
+						<div id="slotChecks" class="slot-grid"></div>
+					</div>
+				</div>
 
-    <table id="aggTable">
-      <thead><tr><th>Rarity</th><th>Selected Levels</th><th>Slot Variant</th><th>Total</th></tr></thead>
-      <tbody></tbody>
-    </table>
+				<div class="row">
+					<div class="controls-row">
+						<button id="clearBtn" type="button">Clear All</button>
+						<button id="runBtn">Search</button>
+					</div>
+				</div>
 
-    <h2 id="detailTitle" style="margin-top:20px;">Talismans found:</h2>
-    <table id="detailTable">
-      <thead><tr><th>Rarity</th><th>Slots</th><th>Skill 1</th><th>Skill 2</th><th>Skill 3</th></tr></thead>
-      <tbody></tbody>
-    </table>
-  </div>
-</div>
+				<div id="summary" class="muted" style="margin-top:8px;"></div>
+				<hr class="div" />
+
+				<table id="aggTable">
+					<thead>
+						<tr>
+							<th>Rarity</th>
+							<th>Selected Levels</th>
+							<th>Slot Variant</th>
+							<th>Total</th>
+						</tr>
+					</thead>
+					<tbody></tbody>
+				</table>
+
+				<h2 id="detailTitle" style="margin-top:20px;">Talismans found:</h2>
+				<table id="detailTable">
+					<thead>
+						<tr>
+							<th>Rarity</th>
+							<th>Slots</th>
+							<th>Skill 1</th>
+							<th>Skill 2</th>
+							<th>Skill 3</th>
+						</tr>
+					</thead>
+					<tbody></tbody>
+				</table>
+			</div>
+		</div>
 
 <script src="data.js"></script>
   <script>
@@ -121,59 +145,108 @@
 function baseName(raw) {
   if (!raw) return "";
   const i = raw.indexOf(" +");
-  return (i === -1 ? raw : raw.slice(0,i)).trim();
+  return (i === -1 ? raw : raw.slice(0, i)).trim();
 }
 
 function makeOptions(sel, items, first) {
   sel.innerHTML = "";
   if (first !== undefined) {
-    const o=document.createElement("option");
-    o.value=""; o.textContent=first; sel.appendChild(o);
+    const o = document.createElement("option");
+    o.value = "";
+    o.textContent = first;
+    sel.appendChild(o);
   }
   for (const it of items) {
-    const o=document.createElement("option");
-    o.value=it; o.textContent=it; sel.appendChild(o);
+    const o = document.createElement("option");
+    o.value = it;
+    o.textContent = it;
+    sel.appendChild(o);
   }
 }
-    
+
 function refreshLevelOptions(skillSel, levelSel) {
   const name = skillSel.value;
   const levels = DATA.levelsByName[name] || [];
-  makeOptions(levelSel, levels.map(n => String(n)), "Any level");
+  makeOptions(
+    levelSel,
+    levels.map((n) => String(n)),
+    "Any level",
+  );
 }
-    
+
 function populateSelectors() {
   const names = DATA.skillNames || [];
   makeOptions(document.getElementById("skillA"), names, "— (choose a skill)");
   makeOptions(document.getElementById("skillB"), names, "— (optional)");
   makeOptions(document.getElementById("skillC"), names, "— (optional)");
-  refreshLevelOptions(document.getElementById("skillA"), document.getElementById("levelA"));
-  refreshLevelOptions(document.getElementById("skillB"), document.getElementById("levelB"));
-  refreshLevelOptions(document.getElementById("skillC"), document.getElementById("levelC"));
-  document.getElementById("skillA").addEventListener("change", ()=>refreshLevelOptions(document.getElementById("skillA"), document.getElementById("levelA")));
-  document.getElementById("skillB").addEventListener("change", ()=>refreshLevelOptions(document.getElementById("skillB"), document.getElementById("levelB")));
-  document.getElementById("skillC").addEventListener("change", ()=>refreshLevelOptions(document.getElementById("skillC"), document.getElementById("levelC")));
+  refreshLevelOptions(
+    document.getElementById("skillA"),
+    document.getElementById("levelA"),
+  );
+  refreshLevelOptions(
+    document.getElementById("skillB"),
+    document.getElementById("levelB"),
+  );
+  refreshLevelOptions(
+    document.getElementById("skillC"),
+    document.getElementById("levelC"),
+  );
+  document
+    .getElementById("skillA")
+    .addEventListener("change", () =>
+      refreshLevelOptions(
+        document.getElementById("skillA"),
+        document.getElementById("levelA"),
+      ),
+    );
+  document
+    .getElementById("skillB")
+    .addEventListener("change", () =>
+      refreshLevelOptions(
+        document.getElementById("skillB"),
+        document.getElementById("levelB"),
+      ),
+    );
+  document
+    .getElementById("skillC")
+    .addEventListener("change", () =>
+      refreshLevelOptions(
+        document.getElementById("skillC"),
+        document.getElementById("levelC"),
+      ),
+    );
 }
 
 function renderSlotChecks() {
   const set = new Set();
-  for (const rec of DATA.records) for (const s of rec.slots) set.add(String(s).trim());
+  for (const rec of DATA.records)
+    for (const s of rec.slots) set.add(String(s).trim());
   const have = new Set(Array.from(set));
-  const ordered = ["①", "①①", "②", "②①", "③", "W①", "W①①", "W①①①"].filter(s => have.has(s));
+  const ordered = ["①", "①①", "②", "②①", "③", "W①", "W①①", "W①①①"].filter((s) =>
+    have.has(s),
+  );
   const box = document.getElementById("slotChecks");
   box.innerHTML = "";
   for (const s of ordered) {
     const label = document.createElement("label");
     const cb = document.createElement("input");
-    cb.type = "checkbox"; cb.value = s;
-    const span = document.createElement("span"); span.textContent = s;
-    label.appendChild(cb); label.appendChild(span); box.appendChild(label);
+    cb.type = "checkbox";
+    cb.value = s;
+    const span = document.createElement("span");
+    span.textContent = s;
+    label.appendChild(cb);
+    label.appendChild(span);
+    box.appendChild(label);
   }
 }
-    
+
 function getSelectedSlots() {
   const out = [];
-  document.querySelectorAll('#slotChecks input[type="checkbox"]').forEach(cb=>{ if(cb.checked) out.push(cb.value); });
+  document
+    .querySelectorAll('#slotChecks input[type="checkbox"]')
+    .forEach((cb) => {
+      if (cb.checked) out.push(cb.value);
+    });
   return out;
 }
 
@@ -185,9 +258,9 @@ function readSelection() {
   const lB = document.getElementById("levelB").value;
   const lC = document.getElementById("levelC").value;
   const req = [];
-  if (sA) req.push({name:sA, level: lA? parseInt(lA): null});
-  if (sB) req.push({name:sB, level: lB? parseInt(lB): null});
-  if (sC) req.push({name:sC, level: lC? parseInt(lC): null});
+  if (sA) req.push({ name: sA, level: lA ? parseInt(lA) : null });
+  if (sB) req.push({ name: sB, level: lB ? parseInt(lB) : null });
+  if (sC) req.push({ name: sC, level: lC ? parseInt(lC) : null });
   return req;
 }
 
@@ -200,8 +273,17 @@ function matchesSelectedSkills(pickSet, req) {
   for (const r of req) {
     let ok = false;
     for (const raw of pickSet) {
-      if (r.level == null) { if (raw.startsWith(r.name)) { ok = true; break; } }
-      else { if (raw === r.name + " +" + r.level) { ok = true; break; } }
+      if (r.level == null) {
+        if (raw.startsWith(r.name)) {
+          ok = true;
+          break;
+        }
+      } else {
+        if (raw === r.name + " +" + r.level) {
+          ok = true;
+          break;
+        }
+      }
     }
     if (!ok) return false;
   }
@@ -211,114 +293,173 @@ function matchesSelectedSkills(pickSet, req) {
 function aggregate() {
   const req = readSelection();
   const slotFilter = getSelectedSlots();
-  const bases = req.map(r=>r.name).map(baseName).filter(Boolean);
+  const bases = req
+    .map((r) => r.name)
+    .map(baseName)
+    .filter(Boolean);
   if (new Set(bases).size !== bases.length) return [];
 
   const rows = [];
   for (const rec of DATA.records) {
     const groups = [rec.g1, rec.g2, rec.g3].filter(Boolean);
-    const arrays = groups.map(g => skillsInGroup(g));
-    if (req.length>0) {
-      const names = new Set([].concat(...arrays).map(it => it.name));
-      const intersects = req.some(r => names.has(r.name));
+    const arrays = groups.map((g) => skillsInGroup(g));
+    if (req.length > 0) {
+      const names = new Set([].concat(...arrays).map((it) => it.name));
+      const intersects = req.some((r) => names.has(r.name));
       if (!intersects) continue;
     }
     const map = new Map();
     function loop(i, picked) {
-      if (i===arrays.length) {
-        const baseArr = picked.map(p=>baseName(p.raw)).filter(Boolean);
+      if (i === arrays.length) {
+        const baseArr = picked.map((p) => baseName(p.raw)).filter(Boolean);
         if (new Set(baseArr).size !== baseArr.length) return;
-        const pickSet = new Set(picked.map(p=>p.raw));
+        const pickSet = new Set(picked.map((p) => p.raw));
         if (!matchesSelectedSkills(pickSet, req)) return;
-        const sig = req.map(r => r.name + ":+ " + (r.level? r.level: "any")).join(", ");
+        const sig = req
+          .map((r) => r.name + ":+ " + (r.level ? r.level : "any"))
+          .join(", ");
         for (const s of rec.slots) {
           if (slotFilter.length && !slotFilter.includes(s)) continue;
           const k = rec.rarity + "|" + sig + "|" + s;
-          map.set(k,(map.get(k)||0)+1);
+          map.set(k, (map.get(k) || 0) + 1);
         }
         return;
       }
-      for (const it of arrays[i]) { picked.push(it); loop(i+1,picked); picked.pop(); }
+      for (const it of arrays[i]) {
+        picked.push(it);
+        loop(i + 1, picked);
+        picked.pop();
+      }
     }
     loop(0, []);
-    for (const [k,v] of map.entries()) {
-      const [rarity,sig,slot] = k.split("|");
-      rows.push({rarity,sig,slot,total:v});
+    for (const [k, v] of map.entries()) {
+      const [rarity, sig, slot] = k.split("|");
+      rows.push({ rarity, sig, slot, total: v });
     }
   }
   const m2 = new Map();
   for (const r of rows) {
-    const k = r.rarity+"|"+r.sig+"|"+r.slot;
-    m2.set(k,(m2.get(k)||0)+r.total);
+    const k = r.rarity + "|" + r.sig + "|" + r.slot;
+    m2.set(k, (m2.get(k) || 0) + r.total);
   }
-  const out = Array.from(m2, ([k,v])=>{ const [rarity,sig,slot]=k.split("|"); return {rarity,sig,slot,total:v}; });
-  out.sort((a,b)=> a.rarity.localeCompare(b.rarity) || a.sig.localeCompare(b.sig) || a.slot.localeCompare(b.slot));
+  const out = Array.from(m2, ([k, v]) => {
+    const [rarity, sig, slot] = k.split("|");
+    return { rarity, sig, slot, total: v };
+  });
+  out.sort(
+    (a, b) =>
+      a.rarity.localeCompare(b.rarity) ||
+      a.sig.localeCompare(b.sig) ||
+      a.slot.localeCompare(b.slot),
+  );
   return out;
 }
 
 function sampleDetail(maxRows) {
   const req = readSelection();
   const slotFilter = getSelectedSlots();
-  const bases = req.map(r=>r.name).map(baseName).filter(Boolean);
+  const bases = req
+    .map((r) => r.name)
+    .map(baseName)
+    .filter(Boolean);
   if (new Set(bases).size !== bases.length) return [];
 
-  const out = []; let count=0;
+  const out = [];
+  let count = 0;
   for (const rec of DATA.records) {
     const groups = [rec.g1, rec.g2, rec.g3].filter(Boolean);
-    const arrays = groups.map(g => DATA.groups[g] || []);
-    function loop(i,picked){
-      if (i===arrays.length) {
-        const baseArr = picked.map(p=>baseName(p.raw)).filter(Boolean);
+    const arrays = groups.map((g) => DATA.groups[g] || []);
+    function loop(i, picked) {
+      if (i === arrays.length) {
+        const baseArr = picked.map((p) => baseName(p.raw)).filter(Boolean);
         if (new Set(baseArr).size !== baseArr.length) return;
-        const pickSet = new Set(picked.map(p=>p.raw));
+        const pickSet = new Set(picked.map((p) => p.raw));
         if (!matchesSelectedSkills(pickSet, req)) return;
         for (const s of rec.slots) {
           if (slotFilter.length && !slotFilter.includes(s)) continue;
-          out.push({rarity:rec.rarity, slots:s, s1:picked[0]?.raw||"", s2:picked[1]?.raw||"", s3:picked[2]?.raw||""});
-          if (++count>=maxRows) return;
+          out.push({
+            rarity: rec.rarity,
+            slots: s,
+            s1: picked[0]?.raw || "",
+            s2: picked[1]?.raw || "",
+            s3: picked[2]?.raw || "",
+          });
+          if (++count >= maxRows) return;
         }
         return;
       }
-      for (const it of arrays[i]) { picked.push(it); loop(i+1,picked); if (count>=maxRows) return; picked.pop(); }
+      for (const it of arrays[i]) {
+        picked.push(it);
+        loop(i + 1, picked);
+        if (count >= maxRows) return;
+        picked.pop();
+      }
     }
-    loop(0,[]);
-    if (count>=maxRows) break;
+    loop(0, []);
+    if (count >= maxRows) break;
   }
   return out;
 }
 
 function renderAgg(rows) {
   const tbody = document.querySelector("#aggTable tbody");
-  tbody.innerHTML = rows.map(r => `<tr><td><span class="pill">${r.rarity}</span></td><td>${r.sig||"(any levels)"}</td><td>${r.slot}</td><td><strong>${r.total.toLocaleString()}</strong></td></tr>`).join("");
-  const total = rows.reduce((s,r)=>s+r.total,0);
-  document.getElementById("summary").textContent = "Total possible talismans matching selection: " + total.toLocaleString();
-}
-    
-function renderDetail(rows) {
-  const tbody = document.querySelector("#detailTable tbody");
-  tbody.innerHTML = rows.map(r => `<tr><td><span class="pill">${r.rarity}</span></td><td>${r.slots}</td><td>${r.s1}</td><td>${r.s2}</td><td>${r.s3}</td></tr>`).join("");
+  tbody.innerHTML = rows
+    .map(
+      (r) =>
+        `<tr><td><span class="pill">${r.rarity}</span></td><td>${r.sig || "(any levels)"}</td><td>${r.slot}</td><td><strong>${r.total.toLocaleString()}</strong></td></tr>`,
+    )
+    .join("");
+  const total = rows.reduce((s, r) => s + r.total, 0);
+  document.getElementById("summary").textContent =
+    "Total possible talismans matching selection: " + total.toLocaleString();
 }
 
-function clearAll(){
-  for (const id of ["skillA","skillB","skillC","levelA","levelB","levelC"]) {
-    const el = document.getElementById(id); if (el) el.value="";
+function renderDetail(rows) {
+  const tbody = document.querySelector("#detailTable tbody");
+  tbody.innerHTML = rows
+    .map(
+      (r) =>
+        `<tr><td><span class="pill">${r.rarity}</span></td><td>${r.slots}</td><td>${r.s1}</td><td>${r.s2}</td><td>${r.s3}</td></tr>`,
+    )
+    .join("");
+}
+
+function clearAll() {
+  for (const id of [
+    "skillA",
+    "skillB",
+    "skillC",
+    "levelA",
+    "levelB",
+    "levelC",
+  ]) {
+    const el = document.getElementById(id);
+    if (el) el.value = "";
   }
   document.querySelector("#aggTable tbody").innerHTML = "";
   document.querySelector("#detailTable tbody").innerHTML = "";
   document.getElementById("summary").textContent = "";
-  document.querySelectorAll('#slotChecks input[type="checkbox"]').forEach(cb=>cb.checked=false);
+  document
+    .querySelectorAll('#slotChecks input[type="checkbox"]')
+    .forEach((cb) => (cb.checked = false));
 }
 
-document.addEventListener("DOMContentLoaded", function(){
+document.addEventListener("DOMContentLoaded", function () {
   populateSelectors();
   renderSlotChecks();
   document.getElementById("clearBtn").addEventListener("click", clearAll);
   document.getElementById("runBtn").addEventListener("click", () => {
-    const agg = aggregate(); renderAgg(agg);
-    const maxRows = parseInt(document.getElementById("limit").value||"5000",10);
-    const sample = sampleDetail(maxRows); renderDetail(sample);
+    const agg = aggregate();
+    renderAgg(agg);
+    const maxRows = parseInt(
+      document.getElementById("limit").value || "5000",
+      10,
+    );
+    const sample = sampleDetail(maxRows);
+    renderDetail(sample);
   });
 });
+
 </script>
 </body>
 </html>
