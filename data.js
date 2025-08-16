@@ -1946,7 +1946,7 @@ const DATA = {
     "Elemental Conversion": [
       1
     ],
-    "Elemental Exploit": [
+    "Elemental Absorbtion": [
       1
     ],
     "Environmental Adaptability": [
