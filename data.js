@@ -1430,8 +1430,8 @@ const DATA = {
         "level": 1
       },
       {
-        "raw": "Elemental Exploit +1",
-        "name": "Elemental Exploit",
+        "raw": "Elemental Absorption +1",
+        "name": "Elemental Absorption",
         "level": 1
       },
       {
