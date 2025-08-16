@@ -1946,7 +1946,7 @@ const DATA = {
     "Elemental Conversion": [
       1
     ],
-    "Elemental Absorbtion": [
+    "Elemental Absorption": [
       1
     ],
     "Environmental Adaptability": [
@@ -2310,7 +2310,7 @@ const DATA = {
     "Dragon Resistance",
     "Earplugs",
     "Elemental Conversion",
-    "Elemental Exploit",
+    "Elemental Absorption",
     "Environmental Adaptability",
     "Environmental Exploiter",
     "Evade Extender",
