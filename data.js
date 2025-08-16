@@ -1430,8 +1430,8 @@ const DATA = {
         "level": 1
       },
       {
-        "raw": "Elemental Conversion +1",
-        "name": "Elemental Conversion",
+        "raw": "Convert Element +1",
+        "name": "Convert Element",
         "level": 1
       },
       {
@@ -1899,6 +1899,9 @@ const DATA = {
       1,
       2
     ],
+    "Convert Element": [
+      1
+    ],
     "Critical Boost": [
       1
     ],
@@ -1950,9 +1953,6 @@ const DATA = {
     "Earplugs": [
       1,
       2
-    ],
-    "Elemental Conversion": [
-      1
     ],
     "Elemental Absorption": [
       1
@@ -2309,6 +2309,7 @@ const DATA = {
     "Charge Up",
     "Coalescence",
     "Constitution",
+    "Convert Element",
     "Counterstrike",
     "Critical Boost",
     "Critical Draw",
@@ -2321,7 +2322,6 @@ const DATA = {
     "Dragon Attack",
     "Dragon Resistance",
     "Earplugs",
-    "Elemental Conversion",
     "Elemental Absorption",
     "Environmental Adaptability",
     "Environmental Exploiter",
