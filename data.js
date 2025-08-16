@@ -932,19 +932,19 @@ const DATA = {
         "level": 2
       },
       {
-        "raw": "Botanist +2",
+        "raw": "Botanist +3",
         "name": "Botanist",
-        "level": 2
+        "level": 3
       },
       {
-        "raw": "Constitution +2",
+        "raw": "Constitution +3",
         "name": "Constitution",
-        "level": 2
+        "level": 3
       },
       {
-        "raw": "Defense Boost +2",
+        "raw": "Defense Boost +3",
         "name": "Defense Boost",
-        "level": 2
+        "level": 3
       },
       {
         "raw": "Defense Down Resistance +2",
@@ -1077,9 +1077,9 @@ const DATA = {
         "level": 2
       },
       {
-        "raw": "Wide-Range +2",
+        "raw": "Wide-Range +3",
         "name": "Wide-Range",
-        "level": 2
+        "level": 3
       },
       {
         "raw": "Windproof +2",
@@ -1872,6 +1872,7 @@ const DATA = {
     ],
     "Botanist": [
       2,
+      3,
       4
     ],
     "Burst": [
@@ -1891,6 +1892,7 @@ const DATA = {
     ],
     "Constitution": [
       2,
+      3,
       4
     ],
     "Counterstrike": [
@@ -1922,6 +1924,7 @@ const DATA = {
     ],
     "Defense Boost": [
       2,
+      3,
       4
     ],
     "Defense Down Resistance": [
@@ -2273,6 +2276,7 @@ const DATA = {
     ],
     "Wide-Range": [
       2,
+      3,
       4
     ],
     "Windproof": [
