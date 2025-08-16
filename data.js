@@ -845,8 +845,8 @@ const DATA = {
         "level": 1
       },
       {
-        "raw": "Quick Sheath +1",
-        "name": "Quick Sheath",
+        "raw": "Quick Sheathe +1",
+        "name": "Quick Sheathe",
         "level": 1
       },
       {
@@ -1032,8 +1032,8 @@ const DATA = {
         "level": 2
       },
       {
-        "raw": "Quick Sheath +2",
-        "name": "Quick Sheath",
+        "raw": "Quick Sheathe +2",
+        "name": "Quick Sheathe",
         "level": 2
       },
       {
@@ -1204,8 +1204,8 @@ const DATA = {
         "level": 3
       },
       {
-        "raw": "Quick Sheath +3",
-        "name": "Quick Sheath",
+        "raw": "Quick Sheathe +3",
+        "name": "Quick Sheathe",
         "level": 3
       },
       {
@@ -2157,7 +2157,7 @@ const DATA = {
       2,
       3
     ],
-    "Quick Sheath": [
+    "Quick Sheathe": [
       1,
       2,
       3
@@ -2368,7 +2368,7 @@ const DATA = {
     "Power Prolonger",
     "Protective Polish",
     "Punishing Draw",
-    "Quick Sheath",
+    "Quick Sheathe",
     "Rapid Fire Up",
     "Rapid Morph",
     "Razor Sharp",
