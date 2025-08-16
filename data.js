@@ -730,8 +730,8 @@ const DATA = {
         "level": 1
       },
       {
-        "raw": "Blastblight Resistance +1",
-        "name": "Blastblight Resistance",
+        "raw": "Blast Resistance +1",
+        "name": "Blast Resistance",
         "level": 1
       },
       {
@@ -917,8 +917,8 @@ const DATA = {
         "level": 2
       },
       {
-        "raw": "Blastblight Resistance +2",
-        "name": "Blastblight Resistance",
+        "raw": "Blast Resistance +2",
+        "name": "Blast Resistance",
         "level": 2
       },
       {
@@ -1099,8 +1099,8 @@ const DATA = {
         "level": 3
       },
       {
-        "raw": "Blastblight Resistance +3",
-        "name": "Blastblight Resistance",
+        "raw": "Blast Resistance +3",
+        "name": "Blast Resistance",
         "level": 3
       },
       {
@@ -1846,7 +1846,7 @@ const DATA = {
     "Blast Functionality": [
       1
     ],
-    "Blastblight Resistance": [
+    "Blast Resistance": [
       1,
       2,
       3
@@ -2299,7 +2299,7 @@ const DATA = {
     "Bind Resistance",
     "Blast Attack",
     "Blast Functionality",
-    "Blastblight Resistance",
+    "Blast Resistance",
     "Bleeding Resistance",
     "Blight Resistance",
     "Bludgeoner",
