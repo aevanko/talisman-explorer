@@ -414,17 +414,21 @@ function sampleDetail(maxRows) {
   return out;
 }
 
-function renderAgg(rows) {
+function renderAgg(rows, durationMs) {
   const tbody = document.querySelector("#aggTable tbody");
   tbody.innerHTML = rows
     .map(
       (r) =>
-        `<tr><td><span class="pill">${r.rarity}</span></td><td>${r.sig || "(any levels)"}</td><td>${r.slot}</td><td><strong>${r.total.toLocaleString()}</strong></td></tr>`,
+        `<tr><td><span class="pill">${r.rarity}</span></td><td>${
+          r.sig || "(any levels)"
+        }</td><td>${r.slot}</td><td><strong>${r.total.toLocaleString()}</strong></td></tr>`
     )
     .join("");
+
   const total = rows.reduce((s, r) => s + r.total, 0);
+  const ms = typeof durationMs === "number" ? `Search complete (${durationMs.toFixed(2)} ms). ` : "";
   document.getElementById("summary").textContent =
-    "Total possible talismans matching selection: " + total.toLocaleString();
+    `${ms}Total possible matches: ${total.toLocaleString()}`;
 }
 
 function renderDetail(rows) {
@@ -461,16 +465,18 @@ document.addEventListener("DOMContentLoaded", function () {
   populateSelectors();
   renderSlotChecks();
   document.getElementById("clearBtn").addEventListener("click", clearAll);
-  document.getElementById("runBtn").addEventListener("click", () => {
-    const agg = aggregate();
-    renderAgg(agg);
-    const maxRows = parseInt(
-      document.getElementById("limit").value || "5000",
-      10,
-    );
-    const sample = sampleDetail(maxRows);
-    renderDetail(sample);
-  });
+document.getElementById("runBtn").addEventListener("click", () => {
+  const t0 = performance.now();
+
+  const agg = aggregate();
+  const maxRows = parseInt(document.getElementById("limit").value || "5000", 10);
+  const sample = sampleDetail(maxRows);
+
+  const t1 = performance.now();
+
+  renderAgg(agg, t1 - t0);   // ← pass elapsed time
+  renderDetail(sample);
+});
 });
 
 </script>
