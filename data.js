@@ -1450,8 +1450,8 @@ const DATA = {
         "level": 1
       },
       {
-        "raw": "Offensive Guard +1",
-        "name": "Offensive Guard",
+        "raw": "Foray +1",
+        "name": "Foray",
         "level": 1
       },
       {
@@ -2000,9 +2000,8 @@ const DATA = {
       2,
       3
     ],
-    "Stench Resistance": [
-      1,
-      2
+    "Foray": [
+      1
     ],
     "Free Meal": [
       1,
@@ -2232,6 +2231,10 @@ const DATA = {
       2,
       3
     ],
+    "Stench Resistance": [
+      1,
+      2
+    ],
     "Stun Resistance": [
       1,
       2,
@@ -2331,6 +2334,7 @@ const DATA = {
     "Flayer",
     "Flinch Free",
     "Focus",
+    "Foray",
     "Free Meal",
     "Geologist",
     "Guard",
