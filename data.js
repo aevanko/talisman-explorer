@@ -795,8 +795,8 @@ const DATA = {
         "level": 1
       },
       {
-        "raw": "Foul Resistance +1",
-        "name": "Foul Resistance",
+        "raw": "Stench Resistance +1",
+        "name": "Stench Resistance",
         "level": 1
       },
       {
@@ -982,8 +982,8 @@ const DATA = {
         "level": 2
       },
       {
-        "raw": "Foul Resistance +2",
-        "name": "Foul Resistance",
+        "raw": "Stench Resistance +2",
+        "name": "Stench Resistance",
         "level": 2
       },
       {
@@ -2000,7 +2000,7 @@ const DATA = {
       2,
       3
     ],
-    "Foul Resistance": [
+    "Stench Resistance": [
       1,
       2
     ],
@@ -2333,7 +2333,6 @@ const DATA = {
     "Flayer",
     "Flinch Free",
     "Focus",
-    "Foul Resistance",
     "Free Meal",
     "Geologist",
     "Guard",
@@ -2386,6 +2385,7 @@ const DATA = {
     "Spread/Power Shot",
     "Stamina Surge",
     "Stamina Thief",
+    "Stench Resistance",
     "Stun Resistance",
     "Tetrad Shot",
     "Thunder Attack",
