@@ -780,8 +780,8 @@ const DATA = {
         "level": 1
       },
       {
-        "raw": "Environmental Exploiter +1",
-        "name": "Environmental Exploiter",
+        "raw": "Survival Expert +1",
+        "name": "Survival Expert",
         "level": 1
       },
       {
@@ -967,8 +967,8 @@ const DATA = {
         "level": 2
       },
       {
-        "raw": "Environmental Exploiter +2",
-        "name": "Environmental Exploiter",
+        "raw": "Survival Expert +2",
+        "name": "Survival Expert",
         "level": 2
       },
       {
@@ -1144,8 +1144,8 @@ const DATA = {
         "level": 3
       },
       {
-        "raw": "Environmental Exploiter +3",
-        "name": "Environmental Exploiter",
+        "raw": "Survival Expert +3",
+        "name": "Survival Expert",
         "level": 3
       },
       {
@@ -1961,7 +1961,7 @@ const DATA = {
       1,
       2
     ],
-    "Environmental Exploiter": [
+    "Survival Expert": [
       1,
       2,
       3
@@ -2324,7 +2324,6 @@ const DATA = {
     "Dragon Resistance",
     "Earplugs",
     "Elemental Absorption",
-    "Environmental Exploiter",
     "Evade Extender",
     "Evade Window",
     "Exhaust Functionality",
@@ -2387,6 +2386,7 @@ const DATA = {
     "Stamina Thief",
     "Stench Resistance",
     "Stun Resistance",
+    "Survival Expert",
     "Tetrad Shot",
     "Thunder Attack",
     "Thunder Resistance",
