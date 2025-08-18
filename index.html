@@ -283,19 +283,16 @@ function skillsInGroup(g) {
 
 function matchesSelectedSkills(pickSet, req) {
   if (req.length === 0) return false;
+
   for (const r of req) {
     let ok = false;
     for (const raw of pickSet) {
+      const base = baseName(raw);
+
       if (r.level == null) {
-        if (raw.startsWith(r.name)) {
-          ok = true;
-          break;
-        }
+        if (base === r.name) { ok = true; break; }
       } else {
-        if (raw === r.name + " +" + r.level) {
-          ok = true;
-          break;
-        }
+        if (raw === `${r.name} +${r.level}`) { ok = true; break; }
       }
     }
     if (!ok) return false;
