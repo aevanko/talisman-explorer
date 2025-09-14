@@ -53,6 +53,17 @@
         var(--bg);
     }
 
+    :root[data-mode="dark"]{
+  --bg:#0b0f14; --surface:#11161b; --text:#e5e7eb; --muted:#93a1b5; --border:#1f2937;
+  --ring:#93c5fd; --accent:#ffd21e; --accent-ink:#111827; --accent-2:#3b82f6;
+  --chip:#0f1622; --chip-border:#203042; --link:#8ab4ff;
+}
+:root[data-mode="light"]{
+  --bg:#fafafa; --surface:#fff; --text:#111827; --muted:#6b7280; --border:#e5e7eb;
+  --ring:#111827; --accent:#ffd21e; --accent-ink:#1f2937; --accent-2:#fde68a;
+  --chip:#f3f4f6; --chip-border:#e5e7eb; --link:#2563eb;
+}
+
     a{ color:var(--link); text-decoration: none; }
     a:hover{ text-decoration: underline; }
 
@@ -313,17 +324,39 @@
     function clearAll(){ for(const id of ['skillA','skillB','skillC','levelA','levelB','levelC']){ const el=document.getElementById(id); if(el) el.value=''; } document.querySelector('#aggTable tbody').innerHTML=''; document.querySelector('#detailTable tbody').innerHTML=''; document.getElementById('summary').textContent=''; document.querySelectorAll('#slotChecks input[type="checkbox"]').forEach(cb=>cb.checked=false); }
 
     // Mode toggle (force light/dark by flipping a data attr that inverts prefers-color-scheme perception)
-    (function(){
-      const btn = document.getElementById('modeBtn');
-      const KEY='te_mode';
-      function apply(mode){
-        document.documentElement.dataset.mode = mode; // expose if you want custom rules
-        // Simple trick: flip filter for body background when forcing modes (optional)
-      }
-      const saved = localStorage.getItem(KEY);
-      if(saved) apply(saved);
-      btn?.addEventListener('click',()=>{ const cur = localStorage.getItem(KEY)||''; const next = cur==='dark' ? 'light' : (cur==='light' ? '' : 'dark'); if(next) localStorage.setItem(KEY,next); else localStorage.removeItem(KEY); apply(next); });
-    })();
+<script>
+(function(){
+  const btn = document.getElementById('modeBtn');
+  const KEY = 'te_mode'; // '', 'dark', 'light'
+
+  function setColorScheme(mode){
+    // Persisted mode → dataset for CSS to pick up
+    document.documentElement.dataset.mode = mode || '';
+    // Help Edge/Safari style native controls
+    document.documentElement.style.colorScheme = mode==='dark' ? 'dark'
+      : mode==='light' ? 'light'
+      : 'light dark';
+    // Button label
+    if(btn){
+      btn.textContent = (mode==='dark') ? '🌙 Dark (click→Light)'
+                    : (mode==='light') ? '☀︎ Light (click→Auto)'
+                    : 'Auto (System) (click→Dark)';
+    }
+  }
+
+  // Initial state (saved or Auto)
+  const saved = localStorage.getItem(KEY) || '';
+  setColorScheme(saved);
+
+  // Cycle: Auto → Dark → Light → Auto
+  btn?.addEventListener('click', ()=>{
+    const cur = localStorage.getItem(KEY) || '';
+    const next = (cur==='') ? 'dark' : (cur==='dark' ? 'light' : '');
+    if(next) localStorage.setItem(KEY, next); else localStorage.removeItem(KEY);
+    setColorScheme(next);
+  });
+})();
+</script>
 
     // Init
     document.addEventListener('DOMContentLoaded', function(){
