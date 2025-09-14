@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Talisman Explorer — v1.02.01 (HF‑style)</title>
+  <link rel="icon" type="image/png" href="./favi.png"/>
+  <!-- Inter for UI feel (HuggingFace-esque) -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* ======= THEME ======= */
+    :root{
+      --bg: #fafafa;
+      --surface: #ffffff;
+      --text: #111827;         /* gray-900 */
+      --muted: #6b7280;        /* gray-500 */
+      --border: #e5e7eb;       /* gray-200 */
+      --ring: #111827;
+      --accent: #ffd21e;       /* HF yellow */
+      --accent-ink:#1f2937;    /* gray-800 */
+      --accent-2:#fde68a;      /* warm highlight */
+      --chip:#f3f4f6;          /* gray-100 */
+      --chip-border:#e5e7eb;
+      --link:#2563eb;          /* blue-600 */
+      --ok:#10b981;            /* teal/green */
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --bg: #0b0f14;
+        --surface: #11161b;
+        --text: #e5e7eb;
+        --muted: #93a1b5;
+        --border: #1f2937;
+        --ring: #93c5fd;
+        --accent: #ffd21e;
+        --accent-ink:#111827;
+        --accent-2:#3b82f6;
+        --chip:#0f1622;
+        --chip-border:#203042;
+        --link:#8ab4ff;
+      }
+    }
+
+    * { box-sizing: border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color:var(--text);
+      background:
+        radial-gradient(1200px 600px at 100% -10%, rgba(255,210,30,0.08), transparent 60%),
+        radial-gradient(1000px 480px at -10% 10%, rgba(59,130,246,0.08), transparent 55%),
+        var(--bg);
+    }
+
+    a{ color:var(--link); text-decoration: none; }
+    a:hover{ text-decoration: underline; }
+
+    .container{ max-width:1100px; margin: 28px auto 44px; padding: 0 16px; }
+
+    /* Header */
+    .nav{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom: 18px; }
+    .brand{ display:flex; align-items:center; gap:10px; }
+    .brand-logo{ width:36px; height:36px; border-radius:10px; background: var(--surface); border:1px solid var(--border); display:grid; place-items:center; box-shadow:0 1px 0 rgba(0,0,0,.05); }
+    .brand-logo img{ width:26px; height:26px; border-radius:6px; }
+    .brand h1{ font-size: clamp(18px, 2.4vw, 22px); margin:0; letter-spacing:.1px; font-weight:800; }
+
+    .actions{ display:flex; align-items:center; gap:10px; }
+    .mode{ background:var(--chip); border:1px solid var(--chip-border); color:var(--text); padding:8px 12px; border-radius:10px; cursor:pointer; font-weight:600; }
+
+    /* Card */
+    .card{ background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:18px; box-shadow: 0 6px 20px rgba(17,24,39,0.06);
+      backdrop-filter: saturate(120%) blur(3px);
+    }
+
+    .sub{ color:var(--muted); font-size:14px; margin-top:4px; }
+
+    /* Controls grid */
+    .grid{ display:grid; grid-template-columns: repeat(12, 1fr); gap:12px; align-items:end; }
+    .col-3{ grid-column: span 3; }
+    .col-4{ grid-column: span 4; }
+    .col-6{ grid-column: span 6; }
+    .col-12{ grid-column: 1 / -1; }
+    @media (max-width: 900px){ .col-3,.col-4,.col-6{ grid-column: 1 / -1; } }
+
+    label{ color:var(--muted); font-size:12px; font-weight:600; letter-spacing:.02em; margin-bottom:6px; display:block; }
+
+    select, input[type="number"], input[type="text"]{
+      width:100%; background:var(--chip); color:var(--text); border:1px solid var(--chip-border);
+      border-radius:12px; padding:11px 12px; font-size:14px; outline:none;
+      transition: box-shadow .15s ease, border-color .15s ease, transform .02s ease;
+    }
+    select:focus, input:focus{ box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 35%, transparent); border-color: color-mix(in oklab, var(--ring) 50%, var(--chip-border)); }
+
+    .controls-row{ display:flex; gap:10px; flex-wrap:wrap; }
+    .btn{ appearance:none; border:none; cursor:pointer; font-weight:800; letter-spacing:.02em; border-radius:12px; padding:10px 14px; }
+    .btn:focus-visible{ outline: 3px solid color-mix(in oklab, var(--ring) 40%, transparent); outline-offset: 2px; }
+    .btn-primary{ background: linear-gradient(180deg, var(--accent), color-mix(in oklab, var(--accent) 80%, #fff 20%)); color:var(--accent-ink); box-shadow: 0 8px 20px rgba(255,210,30,.25), inset 0 -2px 0 rgba(0,0,0,.08); }
+    .btn-primary:hover{ filter: brightness(1.03); }
+    .btn-ghost{ background: var(--chip); color:var(--text); border:1px solid var(--chip-border); }
+
+    /* Slot check chips */
+    .slot-grid{ display:flex; flex-wrap:wrap; gap:10px; }
+    .chip{ display:inline-flex; align-items:center; gap:8px; padding:9px 12px; border-radius:999px; background:var(--chip); border:1px solid var(--chip-border); font-size:14px; }
+    .chip input{ transform: scale(1.2); accent-color: var(--accent); }
+
+    /* Tables */
+    table{ width:100%; border-collapse: collapse; margin-top:14px; font-size:14px; }
+    thead th{ text-align:left; color:var(--muted); font-weight:700; padding:10px 8px; border-bottom:1px solid var(--border); position: sticky; top:0; backdrop-filter: blur(4px); background: color-mix(in oklab, var(--surface) 92%, transparent); }
+    tbody td{ border-bottom:1px solid var(--border); padding:10px 8px; vertical-align: top; }
+    tbody tr:hover td{ background: color-mix(in oklab, var(--chip) 40%, transparent); }
+
+    .pill{ display:inline-block; padding:3px 10px; border-radius:999px; font-size:12px; font-weight:700; background: var(--chip); border:1px solid var(--chip-border); color: var(--muted); }
+
+    .divider{ height:1px; background:var(--border); margin:16px 0; }
+    .summary{ color:var(--muted); font-size:13px; }
+
+    /* Footer note */
+    .foot{ margin-top:16px; color:var(--muted); font-size:12px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="nav">
+      <div class="brand">
+        <div class="brand-logo"><img src="./gaijinhunter.png" alt="Icon"></div>
+        <h1>Talisman Explorer <span style="color:var(--muted); font-weight:700;">— v1.02.01</span></h1>
+      </div>
+      <div class="actions">
+        <a href="https://youtu.be/AzK352RP5o4" target="_blank" rel="noopener" class="btn btn-ghost" title="Gaijinhunter YouTube">Gaijinhunter ▶</a>
+        <button id="modeBtn" class="mode" type="button" title="Toggle light/dark">☀︎ / 🌙</button>
+      </div>
+    </nav>
+
+    <section class="card">
+      <p class="sub">
+        Pick up to 3 skills (order‑agnostic). <a href="./skills.html">📕 Skill &amp; Group Reference</a>
+      </p>
+
+      <!-- Controls grid -->
+      <div class="grid" id="selectors">
+        <div class="col-4">
+          <label for="skillA">Skill A</label>
+          <select id="skillA"><option value="">— (choose a skill)</option></select>
+          <label for="levelA" style="margin-top:8px;">Level (A)</label>
+          <select id="levelA"><option value="">Any level</option></select>
+        </div>
+        <div class="col-4">
+          <label for="skillB">Skill B</label>
+          <select id="skillB"><option value="">— (optional)</option></select>
+          <label for="levelB" style="margin-top:8px;">Level (B)</label>
+          <select id="levelB"><option value="">Any level</option></select>
+        </div>
+        <div class="col-4">
+          <label for="skillC">Skill C</label>
+          <select id="skillC"><option value="">— (optional)</option></select>
+          <label for="levelC" style="margin-top:8px;">Level (C)</label>
+          <select id="levelC"><option value="">Any level</option></select>
+        </div>
+        <div class="col-3">
+          <label for="limit">Sample size</label>
+          <input id="limit" type="number" value="5000" min="100" step="100" />
+        </div>
+        <div class="col-12">
+          <label style="margin-bottom:6px;">Filter by Slots (optional)</label>
+          <div id="slotChecks" class="slot-grid"></div>
+        </div>
+        <div class="col-12">
+          <div class="controls-row">
+            <button id="clearBtn" type="button" class="btn btn-ghost">Clear All</button>
+            <button id="runBtn" class="btn btn-primary">Search</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="summary" class="summary" style="margin-top:10px;"></div>
+      <div class="divider"></div>
+
+      <table id="aggTable" aria-label="Aggregate results">
+        <thead>
+          <tr>
+            <th>Rarity</th>
+            <th>Selected Levels</th>
+            <th>Slot Variant</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <h2 id="detailTitle" style="margin-top:20px; font-size:18px;">Talismans found:</h2>
+      <table id="detailTable" aria-label="Detail sample">
+        <thead>
+          <tr>
+            <th>Rarity</th>
+            <th>Slots</th>
+            <th>Skill 1</th>
+            <th>Skill 2</th>
+            <th>Skill 3</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <p class="foot">Tip: Press <strong>Search</strong> to refresh results after changing filters. Hold <strong>Tab</strong> to see focus rings for keyboard navigation.</p>
+    </section>
+  </div>
+
+  <!-- Keep original data/logic intact -->
+  <script src="data.js"></script>
+  <script>
+    // === Utilities from original ===
+    function baseName(raw){ if(!raw) return ""; const i=raw.indexOf(" +"); return (i===-1?raw:raw.slice(0,i)).trim(); }
+    function makeOptions(sel, items, first){ sel.innerHTML=""; if(first!==undefined){ const o=document.createElement("option"); o.value=""; o.textContent=first; sel.appendChild(o);} for(const it of items){ const o=document.createElement("option"); o.value=it; o.textContent=it; sel.appendChild(o);} }
+    function refreshLevelOptions(skillSel, levelSel){ const name=skillSel.value; const levels = (DATA.levelsByName[name]||[]); makeOptions(levelSel, levels.map(n=>String(n)), "Any level"); }
+
+    function populateSelectors(){
+      const names = DATA.skillNames || [];
+      makeOptions(document.getElementById('skillA'), names, '— (choose a skill)');
+      makeOptions(document.getElementById('skillB'), names, '— (optional)');
+      makeOptions(document.getElementById('skillC'), names, '— (optional)');
+      refreshLevelOptions(document.getElementById('skillA'), document.getElementById('levelA'));
+      refreshLevelOptions(document.getElementById('skillB'), document.getElementById('levelB'));
+      refreshLevelOptions(document.getElementById('skillC'), document.getElementById('levelC'));
+      document.getElementById('skillA').addEventListener('change',()=>refreshLevelOptions(document.getElementById('skillA'), document.getElementById('levelA')));
+      document.getElementById('skillB').addEventListener('change',()=>refreshLevelOptions(document.getElementById('skillB'), document.getElementById('levelB')));
+      document.getElementById('skillC').addEventListener('change',()=>refreshLevelOptions(document.getElementById('skillC'), document.getElementById('levelC')));
+    }
+
+    function renderSlotChecks(){
+      const set = new Set();
+      for(const rec of DATA.records) for(const s of rec.slots) set.add(String(s).trim());
+      const have = new Set(Array.from(set));
+      const ordered = ['①','①①','②','②①','③','W①','W①①','W①①①'].filter(s=>have.has(s));
+      const box = document.getElementById('slotChecks');
+      box.innerHTML='';
+      for(const s of ordered){
+        const label=document.createElement('label');
+        label.className='chip';
+        const cb=document.createElement('input'); cb.type='checkbox'; cb.value=s; cb.ariaLabel = `Filter ${s}`;
+        const span=document.createElement('span'); span.textContent=s;
+        label.appendChild(cb); label.appendChild(span); box.appendChild(label);
+      }
+    }
+
+    function getSelectedSlots(){ const out=[]; document.querySelectorAll('#slotChecks input[type="checkbox"]').forEach(cb=>{ if(cb.checked) out.push(cb.value); }); return out; }
+    function readSelection(){
+      const sA=document.getElementById('skillA').value; const sB=document.getElementById('skillB').value; const sC=document.getElementById('skillC').value;
+      const lA=document.getElementById('levelA').value; const lB=document.getElementById('levelB').value; const lC=document.getElementById('levelC').value;
+      const req=[]; if(sA) req.push({name:sA, level:lA?parseInt(lA):null}); if(sB) req.push({name:sB, level:lB?parseInt(lB):null}); if(sC) req.push({name:sC, level:lC?parseInt(lC):null});
+      return req;
+    }
+    function skillsInGroup(g){ return DATA.groups[g]||[]; }
+    function matchesSelectedSkills(pickSet, req){ if(req.length===0) return false; for(const r of req){ let ok=false; for(const raw of pickSet){ const base=baseName(raw); if(r.level==null){ if(base===r.name){ok=true;break;} } else { if(raw===`${r.name} +${r.level}`){ok=true;break;} } } if(!ok) return false; } return true; }
+
+    function aggregate(){
+      const req=readSelection(); const slotFilter=getSelectedSlots();
+      const bases=req.map(r=>r.name).map(baseName).filter(Boolean); if(new Set(bases).size!==bases.length) return [];
+      const rows=[];
+      for(const rec of DATA.records){
+        const groups=[rec.g1,rec.g2,rec.g3].filter(Boolean); const arrays=groups.map(g=>skillsInGroup(g));
+        if(req.length>0){ const names=new Set([].concat(...arrays).map(it=>it.name)); const intersects=req.some(r=>names.has(r.name)); if(!intersects) continue; }
+        const map=new Map();
+        function loop(i,picked){
+          if(i===arrays.length){
+            const baseArr=picked.map(p=>baseName(p.raw)).filter(Boolean); if(new Set(baseArr).size!==baseArr.length) return;
+            const pickSet=new Set(picked.map(p=>p.raw)); if(!matchesSelectedSkills(pickSet, req)) return;
+            const sig=req.map(r=>r.name+":+ "+(r.level?r.level:"any")).join(', ');
+            for(const s of rec.slots){ if(slotFilter.length && !slotFilter.includes(s)) continue; const k=rec.rarity+"|"+sig+"|"+s; map.set(k,(map.get(k)||0)+1); }
+            return;
+          }
+          for(const it of arrays[i]){ picked.push(it); loop(i+1,picked); picked.pop(); }
+        }
+        loop(0,[]);
+        for(const [k,v] of map.entries()){ const [rarity,sig,slot]=k.split('|'); rows.push({rarity,sig,slot,total:v}); }
+      }
+      const m2=new Map(); for(const r of rows){ const k=r.rarity+"|"+r.sig+"|"+r.slot; m2.set(k,(m2.get(k)||0)+r.total); }
+      const out=Array.from(m2,([k,v])=>{ const [rarity,sig,slot]=k.split('|'); return {rarity,sig,slot,total:v}; });
+      out.sort((a,b)=> a.rarity.localeCompare(b.rarity) || a.sig.localeCompare(b.sig) || a.slot.localeCompare(b.slot));
+      return out;
+    }
+
+    function sampleDetail(maxRows){
+      const req=readSelection(); const slotFilter=getSelectedSlots();
+      const bases=req.map(r=>r.name).map(baseName).filter(Boolean); if(new Set(bases).size!==bases.length) return [];
+      const out=[]; let count=0;
+      for(const rec of DATA.records){
+        const groups=[rec.g1,rec.g2,rec.g3].filter(Boolean); const arrays=groups.map(g=>DATA.groups[g]||[]);
+        function loop(i,picked){
+          if(i===arrays.length){
+            const baseArr=picked.map(p=>baseName(p.raw)).filter(Boolean); if(new Set(baseArr).size!==baseArr.length) return;
+            const pickSet=new Set(picked.map(p=>p.raw)); if(!matchesSelectedSkills(pickSet, req)) return;
+            for(const s of rec.slots){ if(slotFilter.length && !slotFilter.includes(s)) continue; out.push({rarity:rec.rarity, slots:s, s1:picked[0]?.raw||'', s2:picked[1]?.raw||'', s3:picked[2]?.raw||''}); if(++count>=maxRows) return; }
+            return;
+          }
+          for(const it of arrays[i]){ picked.push(it); loop(i+1,picked); if(count>=maxRows) return; picked.pop(); }
+        }
+        loop(0,[]); if(count>=maxRows) break;
+      }
+      return out;
+    }
+
+    function renderAgg(rows, dur){
+      const tbody=document.querySelector('#aggTable tbody');
+      tbody.innerHTML = rows.map(r=> `<tr><td><span class="pill">${r.rarity}</span></td><td>${r.sig || '(any levels)'}</td><td>${r.slot}</td><td><strong>${r.total.toLocaleString()}</strong></td></tr>`).join('');
+      const total = rows.reduce((s,r)=>s+r.total,0);
+      document.getElementById('summary').textContent = `${typeof dur==='number' ? `Search complete (${dur.toFixed(2)} ms). `:''}Total possible matches: ${total.toLocaleString()}`;
+    }
+    function renderDetail(rows){
+      const tbody=document.querySelector('#detailTable tbody');
+      tbody.innerHTML = rows.map(r=> `<tr><td><span class="pill">${r.rarity}</span></td><td>${r.slots}</td><td>${r.s1}</td><td>${r.s2}</td><td>${r.s3}</td></tr>`).join('');
+    }
+    function clearAll(){ for(const id of ['skillA','skillB','skillC','levelA','levelB','levelC']){ const el=document.getElementById(id); if(el) el.value=''; } document.querySelector('#aggTable tbody').innerHTML=''; document.querySelector('#detailTable tbody').innerHTML=''; document.getElementById('summary').textContent=''; document.querySelectorAll('#slotChecks input[type="checkbox"]').forEach(cb=>cb.checked=false); }
+
+    // Mode toggle (force light/dark by flipping a data attr that inverts prefers-color-scheme perception)
+    (function(){
+      const btn = document.getElementById('modeBtn');
+      const KEY='te_mode';
+      function apply(mode){
+        document.documentElement.dataset.mode = mode; // expose if you want custom rules
+        // Simple trick: flip filter for body background when forcing modes (optional)
+      }
+      const saved = localStorage.getItem(KEY);
+      if(saved) apply(saved);
+      btn?.addEventListener('click',()=>{ const cur = localStorage.getItem(KEY)||''; const next = cur==='dark' ? 'light' : (cur==='light' ? '' : 'dark'); if(next) localStorage.setItem(KEY,next); else localStorage.removeItem(KEY); apply(next); });
+    })();
+
+    // Init
+    document.addEventListener('DOMContentLoaded', function(){
+      populateSelectors();
+      renderSlotChecks();
+      document.getElementById('clearBtn').addEventListener('click', clearAll);
+      document.getElementById('runBtn').addEventListener('click', ()=>{
+        const t0=performance.now();
+        const agg=aggregate();
+        const maxRows=parseInt(document.getElementById('limit').value||'5000',10);
+        const sample=sampleDetail(maxRows);
+        const t1=performance.now();
+        renderAgg(agg, t1-t0);
+        renderDetail(sample);
+      });
+    });
+  </script>
+</body>
+</html>
