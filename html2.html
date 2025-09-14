@@ -3,10 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Talisman Explorer — v1.02.01 (HF‑style)</title>
+  <title>Talisman Explorer — v1.02.01 (HF-style)</title>
   <link rel="icon" type="image/png" href="./favi.png"/>
   <!-- Inter for UI feel (HuggingFace-esque) -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
   <style>
     /* ======= THEME ======= */
     :root{
@@ -40,6 +41,16 @@
         --link:#8ab4ff;
       }
     }
+    /* Explicit overrides for manual toggle (beats system preference) */
+    :root[data-mode="dark"]{
+      --bg:#0b0f14; --surface:#11161b; --text:#e5e7eb; --muted:#93a1b5; --border:#1f2937;
+      --ring:#93c5fd; --accent:#ffd21e; --accent-ink:#111827; --accent-2:#3b82f6;
+      --chip:#0f1622; --chip-border:#203042; --link:#8ab4ff;
+    }
+    :root[data-mode="light"]{
+      --bg:#fafafa; --surface:#ffffff; --text:#111827; --muted:#6b7280; --border:#e5e7eb; --ring:#111827;
+      --accent:#ffd21e; --accent-ink:#1f2937; --accent-2:#fde68a; --chip:#f3f4f6; --chip-border:#e5e7eb; --link:#2563eb;
+    }
 
     * { box-sizing: border-box; }
     html,body{ height:100%; }
@@ -52,17 +63,6 @@
         radial-gradient(1000px 480px at -10% 10%, rgba(59,130,246,0.08), transparent 55%),
         var(--bg);
     }
-
-    :root[data-mode="dark"]{
-  --bg:#0b0f14; --surface:#11161b; --text:#e5e7eb; --muted:#93a1b5; --border:#1f2937;
-  --ring:#93c5fd; --accent:#ffd21e; --accent-ink:#111827; --accent-2:#3b82f6;
-  --chip:#0f1622; --chip-border:#203042; --link:#8ab4ff;
-}
-:root[data-mode="light"]{
-  --bg:#fafafa; --surface:#fff; --text:#111827; --muted:#6b7280; --border:#e5e7eb;
-  --ring:#111827; --accent:#ffd21e; --accent-ink:#1f2937; --accent-2:#fde68a;
-  --chip:#f3f4f6; --chip-border:#e5e7eb; --link:#2563eb;
-}
 
     a{ color:var(--link); text-decoration: none; }
     a:hover{ text-decoration: underline; }
@@ -80,7 +80,9 @@
     .mode{ background:var(--chip); border:1px solid var(--chip-border); color:var(--text); padding:8px 12px; border-radius:10px; cursor:pointer; font-weight:600; }
 
     /* Card */
-    .card{ background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:18px; box-shadow: 0 6px 20px rgba(17,24,39,0.06);
+    .card{
+      background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:18px;
+      box-shadow: 0 6px 20px rgba(17,24,39,0.06);
       backdrop-filter: saturate(120%) blur(3px);
     }
 
@@ -117,7 +119,10 @@
 
     /* Tables */
     table{ width:100%; border-collapse: collapse; margin-top:14px; font-size:14px; }
-    thead th{ text-align:left; color:var(--muted); font-weight:700; padding:10px 8px; border-bottom:1px solid var(--border); position: sticky; top:0; backdrop-filter: blur(4px); background: color-mix(in oklab, var(--surface) 92%, transparent); }
+    thead th{
+      text-align:left; color:var(--muted); font-weight:700; padding:10px 8px; border-bottom:1px solid var(--border);
+      position: sticky; top:0; backdrop-filter: blur(4px); background: color-mix(in oklab, var(--surface) 92%, transparent);
+    }
     tbody td{ border-bottom:1px solid var(--border); padding:10px 8px; vertical-align: top; }
     tbody tr:hover td{ background: color-mix(in oklab, var(--chip) 40%, transparent); }
 
@@ -145,7 +150,7 @@
 
     <section class="card">
       <p class="sub">
-        Pick up to 3 skills (order‑agnostic). <a href="./skills.html">📕 Skill &amp; Group Reference</a>
+        Pick up to 3 skills (order-agnostic). <a href="./skills.html">📕 Skill &amp; Group Reference</a>
       </p>
 
       <!-- Controls grid -->
@@ -217,8 +222,9 @@
     </section>
   </div>
 
-  <!-- Keep original data/logic intact -->
+  <!-- Your original data/logic -->
   <script src="data.js"></script>
+
   <script>
     // === Utilities from original ===
     function baseName(raw){ if(!raw) return ""; const i=raw.indexOf(" +"); return (i===-1?raw:raw.slice(0,i)).trim(); }
@@ -321,57 +327,75 @@
       const tbody=document.querySelector('#detailTable tbody');
       tbody.innerHTML = rows.map(r=> `<tr><td><span class="pill">${r.rarity}</span></td><td>${r.slots}</td><td>${r.s1}</td><td>${r.s2}</td><td>${r.s3}</td></tr>`).join('');
     }
-    function clearAll(){ for(const id of ['skillA','skillB','skillC','levelA','levelB','levelC']){ const el=document.getElementById(id); if(el) el.value=''; } document.querySelector('#aggTable tbody').innerHTML=''; document.querySelector('#detailTable tbody').innerHTML=''; document.getElementById('summary').textContent=''; document.querySelectorAll('#slotChecks input[type="checkbox"]').forEach(cb=>cb.checked=false); }
-
-    // Mode toggle (force light/dark by flipping a data attr that inverts prefers-color-scheme perception)
-<script>
-(function(){
-  const btn = document.getElementById('modeBtn');
-  const KEY = 'te_mode'; // '', 'dark', 'light'
-
-  function setColorScheme(mode){
-    // Persisted mode → dataset for CSS to pick up
-    document.documentElement.dataset.mode = mode || '';
-    // Help Edge/Safari style native controls
-    document.documentElement.style.colorScheme = mode==='dark' ? 'dark'
-      : mode==='light' ? 'light'
-      : 'light dark';
-    // Button label
-    if(btn){
-      btn.textContent = (mode==='dark') ? '🌙 Dark (click→Light)'
-                    : (mode==='light') ? '☀︎ Light (click→Auto)'
-                    : 'Auto (System) (click→Dark)';
+    function clearAll(){
+      for(const id of ['skillA','skillB','skillC','levelA','levelB','levelC']){
+        const el=document.getElementById(id); if(el) el.value='';
+      }
+      document.querySelector('#aggTable tbody').innerHTML='';
+      document.querySelector('#detailTable tbody').innerHTML='';
+      document.getElementById('summary').textContent='';
+      document.querySelectorAll('#slotChecks input[type="checkbox"]').forEach(cb=>cb.checked=false);
     }
-  }
 
-  // Initial state (saved or Auto)
-  const saved = localStorage.getItem(KEY) || '';
-  setColorScheme(saved);
+    /* ======================
+       Theme toggle (Auto → Dark → Light) with Edge-friendly color-scheme
+       Defaults to Dark on first visit
+    ====================== */
+    (function(){
+      const btn = document.getElementById('modeBtn');
+      const KEY = 'te_mode'; // '', 'dark', 'light'
 
-  // Cycle: Auto → Dark → Light → Auto
-  btn?.addEventListener('click', ()=>{
-    const cur = localStorage.getItem(KEY) || '';
-    const next = (cur==='') ? 'dark' : (cur==='dark' ? 'light' : '');
-    if(next) localStorage.setItem(KEY, next); else localStorage.removeItem(KEY);
-    setColorScheme(next);
-  });
-})();
-</script>
+      function apply(mode){
+        // dataset for CSS to read
+        document.documentElement.dataset.mode = mode || '';
+        // keep native controls consistent (Edge/Safari)
+        document.documentElement.style.colorScheme =
+          mode==='dark' ? 'dark' : mode==='light' ? 'light' : 'light dark';
+        // button label
+        if(btn){
+          btn.textContent =
+            mode==='dark'  ? '🌙 Dark (click→Light)' :
+            mode==='light' ? '☀︎ Light (click→Auto)' :
+                              'Auto (System) (click→Dark)';
+        }
+      }
 
-    // Init
-    document.addEventListener('DOMContentLoaded', function(){
-      populateSelectors();
-      renderSlotChecks();
-      document.getElementById('clearBtn').addEventListener('click', clearAll);
-      document.getElementById('runBtn').addEventListener('click', ()=>{
-        const t0=performance.now();
-        const agg=aggregate();
-        const maxRows=parseInt(document.getElementById('limit').value||'5000',10);
-        const sample=sampleDetail(maxRows);
-        const t1=performance.now();
-        renderAgg(agg, t1-t0);
-        renderDetail(sample);
+      // Default to Dark if no saved preference
+      let saved = localStorage.getItem(KEY) || '';
+      if(!saved){ saved = 'dark'; localStorage.setItem(KEY,'dark'); }
+      apply(saved);
+
+      // Click to cycle
+      btn?.addEventListener('click', ()=>{
+        const cur = localStorage.getItem(KEY) || '';
+        const next = (cur==='') ? 'dark' : (cur==='dark' ? 'light' : '');
+        if(next) localStorage.setItem(KEY,next); else localStorage.removeItem(KEY);
+        apply(next);
       });
+    })();
+
+    // ==== Init (guarded so it won't error if something's missing) ====
+    document.addEventListener('DOMContentLoaded', function(){
+      try{
+        if(typeof populateSelectors==='function'){
+          populateSelectors();
+          if(typeof renderSlotChecks==='function') renderSlotChecks();
+          const clearBtn = document.getElementById('clearBtn');
+          const runBtn = document.getElementById('runBtn');
+          clearBtn && clearBtn.addEventListener('click', clearAll);
+          runBtn && runBtn.addEventListener('click', ()=>{
+            const t0 = performance.now();
+            const agg = (typeof aggregate==='function') ? aggregate() : [];
+            const maxRows = parseInt((document.getElementById('limit')||{}).value||'5000',10);
+            const sample = (typeof sampleDetail==='function') ? sampleDetail(maxRows) : [];
+            const t1 = performance.now();
+            if(typeof renderAgg==='function') renderAgg(agg, t1 - t0);
+            if(typeof renderDetail==='function') renderDetail(sample);
+          });
+        }
+      }catch(e){
+        console.warn('Init skipped due to missing original functions:', e);
+      }
     });
   </script>
 </body>
